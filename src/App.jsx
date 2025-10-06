@@ -13,6 +13,14 @@ function App() {
     return saved ? Number(saved) : 0;
   });
 
+  // کنترل ارتفاع صفحه
+  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+  useEffect(() => {
+    const handleResize = () => setWindowHeight(window.innerHeight);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   useEffect(() => {
     localStorage.setItem("bgIndex", bgIndex);
   }, [bgIndex]);
@@ -36,6 +44,9 @@ function App() {
       }
     };
   }, []);
+
+  // اگر ارتفاع کمتر از 500px بود، کارت خوشامد حذف و ساعت‌ها بالا قرار بگیرند
+  const isShort = windowHeight < 700;
 
   return (
     <div
@@ -67,34 +78,43 @@ function App() {
           />
         ))}
       </div>
-      {/* ساعت‌ها و کارت خوش آمدید: بالا راست */}
-      <div className="fixed top-5 left-5 flex flex-row items-start gap-4 z-20">
-        <div className="flex flex-col items-center gap-4">
+      {/* ساعت‌ها و کارت خوش آمدید */}
+      {isShort ? (
+        // حالت ارتفاع کم: ساعت آنالوگ و دیجیتال وسط و بالا
+        <div className="fixed top-3 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-20">
           <AnalogClock />
           <DigitalClock />
         </div>
-        {/* کارت شیشه‌ای خوش آمدید کنار ساعت */}
-        <div
-          ref={welcomeRef}
-          className="glass-black rounded-xl px-4 py-6 text-white text-lg font-semibold shadow-lg backdrop-blur-md flex flex-col items-center justify-center"
-          style={{
-            maxWidth: 168,
-            width: 168,
-            minHeight: 110,
-            height: 255,
-            textAlign: "center",
-            whiteSpace: "normal",
-            wordBreak: "break-word",
-            direction: "rtl",
-          }}
-        >
-          به اکستنشنِ
-          <span className="text-4xl text-purple-400 font-extrabold my-5 block">
-            کیفور
-          </span>
-          خوش آمدید😍
+      ) : (
+        // حالت عادی: ساعت‌ها و کارت خوش آمدید بالا چپ
+        <div className="fixed top-5 left-5 flex flex-row items-start gap-4 z-20">
+          {/* کارت شیشه‌ای خوش آمدید کنار ساعت */}
+          <div
+            ref={welcomeRef}
+            className="glass-black rounded-xl px-4 py-6 text-white text-lg font-semibold shadow-lg backdrop-blur-md flex flex-col items-center justify-center"
+            style={{
+              maxWidth: 168,
+              width: 168,
+              minHeight: 110,
+              height: 255,
+              textAlign: "center",
+              whiteSpace: "normal",
+              wordBreak: "break-word",
+              direction: "rtl",
+            }}
+          >
+            به اکستنشنِ
+            <span className="text-4xl text-purple-400 font-extrabold my-5 block">
+              کیفور
+            </span>
+            خوش آمدید😍
+          </div>
+          <div className="flex flex-col items-center gap-4">
+            <AnalogClock />
+            <DigitalClock />
+          </div>
         </div>
-      </div>
+      )}
       {/* تقویم: پایین چپ */}
       <div className="fixed bottom-5 left-5 z-20">
         <CalendarWidget />
