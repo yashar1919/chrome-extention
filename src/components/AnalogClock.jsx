@@ -38,19 +38,20 @@ function AnalogClock() {
   return (
     <div
       ref={clockRef}
-      className="glass-black w-[230px] h-[230px] flex items-center justify-center rounded-full  z-20"
+      className="glass-black w-[180px] h-[180px] flex items-center justify-center rounded-full z-20"
     >
-      <div className="relative w-[210px] h-[210px] rounded-full">
+      <div className="relative w-[170px] h-[170px] rounded-full">
         {/* اعداد ساعت */}
         {numbers.map((num, i) => {
           const angle = (i + 1) * 30 - 90;
-          const radius = 85;
-          const x = 105 + radius * Math.cos((angle * Math.PI) / 180);
-          const y = 105 + radius * Math.sin((angle * Math.PI) / 180);
+          const radius = 68; // متناسب با سایز جدید
+          const center = 85; // مرکز دایره جدید
+          const x = center + radius * Math.cos((angle * Math.PI) / 180);
+          const y = center + radius * Math.sin((angle * Math.PI) / 180);
           return (
             <span
               key={num}
-              className="absolute font-extrabold text-[20px] select-none"
+              className="absolute font-extrabold text-[16px] select-none"
               style={{
                 left: x,
                 top: y,
@@ -69,8 +70,8 @@ function AnalogClock() {
         <div
           className="absolute left-1/2 top-1/2 rounded origin-bottom"
           style={{
-            width: "6px",
-            height: "55px",
+            width: "5px",
+            height: "38px",
             background: "#f3e8ff",
             boxShadow: "0 0 8px 2px #fff4",
             transform: `translate(-50%, -100%) rotate(${
@@ -83,8 +84,8 @@ function AnalogClock() {
         <div
           className="absolute left-1/2 top-1/2 rounded origin-bottom"
           style={{
-            width: "4px",
-            height: "85px",
+            width: "3px",
+            height: "60px",
             background: "#f3e8ff",
             boxShadow: "0 0 8px 2px #a78bfa88",
             transform: `translate(-50%, -100%) rotate(${min * 6}deg)`,
@@ -96,7 +97,7 @@ function AnalogClock() {
           className="absolute left-1/2 top-1/2 rounded origin-bottom"
           style={{
             width: "2px",
-            height: "92px",
+            height: "68px",
             background: "linear-gradient(180deg, #a78bfa 0%, #f472b6 100%)",
             boxShadow: "0 0 8px 2px #a78bfa88",
             transform: `translate(-50%, -100%) rotate(${sec * 6}deg)`,
@@ -105,7 +106,7 @@ function AnalogClock() {
         />
         {/* مرکز */}
         <div
-          className="absolute left-1/2 top-1/2 w-5 h-5 rounded-full border-2 border-white/60"
+          className="absolute left-1/2 top-1/2 w-4 h-4 rounded-full border-2 border-white/60"
           style={{
             background: "rgba(168,139,250,0.25)",
             backdropFilter: "blur(6px)",

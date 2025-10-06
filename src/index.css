@@ -70,3 +70,47 @@ body,
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
   overflow: hidden;
 }
+
+:where(.css-1n1sbgs).ant-checkbox-wrapper-checked:not(.ant-checkbox-wrapper-disabled):hover .ant-checkbox-inner,
+:where(.css-1n1sbgs).ant-checkbox-checked:not(.ant-checkbox-disabled):hover .ant-checkbox-inner {
+  color: #9810fa;
+  background-color: #9810fa;
+}
+
+:where(.css-1n1sbgs).ant-checkbox-wrapper:not(.ant-checkbox-wrapper-disabled):hover .ant-checkbox-checked:not(.ant-checkbox-disabled) .ant-checkbox-inner {
+  color: #9810fa;
+  background-color: #9810fa;
+}
+
+.ant-popconfirm-inner-content {
+  direction: rtl;
+}
+
+:where(.css-17fne0m).ant-btn-variant-solid:not(:disabled):not(.ant-btn-disabled):hover {
+  background-color: darkred;
+}
+
+:where(.css-17fne0m).ant-btn-variant-solid {
+  background-color: red;
+}
+
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #a78bfa #232136;
+  /* thumb, track */
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(120deg, #a78bfa 40%, #f472b6 100%);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(30, 27, 75, 0.3);
+  border-radius: 3px;
+}
