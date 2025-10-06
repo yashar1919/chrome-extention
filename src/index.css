@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+@font-face {
+  font-family: 'IRANSans';
+  src: url('/public/fonts/woff2/IRANSansWeb.woff2') format('woff2'),
+    url('/public/fonts/woff/IRANSansWeb.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+body,
+* {
+  font-family: 'IRANSans', 'Tahoma', 'Arial', sans-serif;
+}
+
+.bg {
+  min-height: 100vh;
+  width: 100vw;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #232526 0%, #414345 100%);
+}
+
+.bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: url('/apple-bg.svg') center center / cover no-repeat;
+  opacity: 0.85;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.multi-locale-days .rmdp-day {
+  width: 50px;
+  height: 50px;
+}
+
+.purple .rmdp-week-day {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.rmdp-header-values {
+  font-size: 20px;
+}
+
+.purple .rmdp-arrow {
+  padding: 4px;
+  border-color: rgb(235, 223, 223) !important;
+}
