@@ -48,10 +48,32 @@ function App() {
           />
         ))}
       </div>
-      {/* ساعت‌ها: بالا راست */}
-      <div className="fixed top-5 left-5 flex flex-col items-center gap-4 z-20">
-        <AnalogClock />
-        <DigitalClock />
+      {/* ساعت‌ها و کارت خوش آمدید: بالا راست */}
+      <div className="fixed top-5 left-5 flex flex-row items-start gap-4 z-20">
+        <div className="flex flex-col items-center gap-4">
+          <AnalogClock />
+          <DigitalClock />
+        </div>
+        {/* کارت شیشه‌ای خوش آمدید کنار ساعت */}
+        <div
+          className="glass-black rounded-xl px-4 py-6 text-white text-lg font-semibold shadow-lg backdrop-blur-md flex flex-col items-center justify-center"
+          style={{
+            maxWidth: 168,
+            width: 168,
+            minHeight: 110,
+            height: 255,
+            textAlign: "center",
+            whiteSpace: "normal",
+            wordBreak: "break-word",
+            direction: "rtl",
+          }}
+        >
+          به اکستنشنِ
+          <span className="text-4xl text-purple-400 font-extrabold my-5 block">
+            کیفور
+          </span>
+          خوش آمدید😍
+        </div>
       </div>
       {/* تقویم: پایین چپ */}
       <div className="fixed bottom-5 left-5 z-20">
