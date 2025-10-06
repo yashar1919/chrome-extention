@@ -1,22 +1,41 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import AnalogClock from "./components/AnalogClock";
 import CalendarWidget from "./components/CalendarWidget";
 import DigitalClock from "./components/DigitalClock";
 import TodoList from "./components/TodoList";
+import VanillaTilt from "vanilla-tilt";
 
 const BG_IMAGES = Array.from({ length: 12 }, (_, i) => `/pic${i + 1}.jpg`);
 
 function App() {
-  // خواندن پس‌زمینه انتخابی از localStorage
   const [bgIndex, setBgIndex] = useState(() => {
     const saved = localStorage.getItem("bgIndex");
     return saved ? Number(saved) : 0;
   });
 
-  // ذخیره پس‌زمینه انتخابی در localStorage
   useEffect(() => {
     localStorage.setItem("bgIndex", bgIndex);
   }, [bgIndex]);
+
+  // ریف و افکت vanilla-tilt برای کارت خوش آمدید
+  const welcomeRef = useRef(null);
+  useEffect(() => {
+    if (welcomeRef.current) {
+      VanillaTilt.init(welcomeRef.current, {
+        max: 18,
+        speed: 400,
+        glare: true,
+        "max-glare": 0.25,
+        scale: 1.04,
+      });
+    }
+    return () => {
+      if (welcomeRef.current && welcomeRef.current.vanillaTilt) {
+        //eslint-disable-next-line
+        welcomeRef.current.vanillaTilt.destroy();
+      }
+    };
+  }, []);
 
   return (
     <div
@@ -56,6 +75,7 @@ function App() {
         </div>
         {/* کارت شیشه‌ای خوش آمدید کنار ساعت */}
         <div
+          ref={welcomeRef}
           className="glass-black rounded-xl px-4 py-6 text-white text-lg font-semibold shadow-lg backdrop-blur-md flex flex-col items-center justify-center"
           style={{
             maxWidth: 168,

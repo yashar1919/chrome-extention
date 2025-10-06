@@ -5,6 +5,7 @@ import manifest from './manifest.json';
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
+  base: "./",
   plugins: [
     react(),
     tailwindcss(),
