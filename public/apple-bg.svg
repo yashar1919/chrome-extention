@@ -1,13 +1,32 @@
-<!-- filepath: f:\VSCode\Portfolio\yashar-portfolio\public\apple-bg.svg -->
 <svg width="100%" height="100%" viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <g filter="url(#blur)">
-    <ellipse cx="400" cy="300" rx="400" ry="300" fill="#7F7FD5" fill-opacity="0.5"/>
-    <ellipse cx="1100" cy="600" rx="340" ry="240" fill="#86A8E7" fill-opacity="0.4"/>
-    <ellipse cx="900" cy="200" rx="200" ry="160" fill="#91EAE4" fill-opacity="0.35"/>
+  <rect width="1440" height="900" fill="#23113a"/>
+  <g filter="url(#blur1)">
+    <circle cx="300" cy="200" r="170" fill="url(#grad1)" />
+    <circle cx="1200" cy="180" r="140" fill="url(#grad2)" />
+    <circle cx="720" cy="850" r="180" fill="url(#grad3)" />
+    <circle cx="1300" cy="700" r="110" fill="url(#grad1)" />
+    <circle cx="200" cy="800" r="120" fill="url(#grad2)" />
+    <circle cx="900" cy="300" r="90" fill="url(#grad3)" />
+    <circle cx="400" cy="600" r="80" fill="url(#grad1)" />
   </g>
   <defs>
-    <filter id="blur" x="-100" y="-100" width="1700" height="1100" filterUnits="userSpaceOnUse">
-      <feGaussianBlur stdDeviation="80"/>
+    <radialGradient id="grad1" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fff0" />
+      <stop offset="60%" stop-color="#ffb347" />
+      <stop offset="100%" stop-color="#ff5e62" />
+    </radialGradient>
+    <radialGradient id="grad2" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fff0" />
+      <stop offset="60%" stop-color="#ffb347" />
+      <stop offset="100%" stop-color="#ff9966" />
+    </radialGradient>
+    <radialGradient id="grad3" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fff0" />
+      <stop offset="60%" stop-color="#ffb347" />
+      <stop offset="100%" stop-color="#ff5e62" />
+    </radialGradient>
+    <filter id="blur1" x="-100" y="-100" width="1700" height="1100" filterUnits="userSpaceOnUse">
+      <feGaussianBlur stdDeviation="40"/>
     </filter>
   </defs>
 </svg>

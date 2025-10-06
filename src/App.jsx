@@ -1,10 +1,17 @@
+import AnalogClock from "./components/AnalogClock";
 import CalendarWidget from "./components/CalendarWidget";
+import DigitalClock from "./components/DigitalClock";
 
 function App() {
   return (
-    <div className="bg">
-      <div className="min-h-screen w-full flex items-center justify-center relative">
-        <h1 className="text-white text-3xl font-bold">👋 به کیفور خوش آمدید</h1>
+    <div className="bg min-h-screen w-full">
+      {/* ساعت‌ها: بالا راست */}
+      <div className="fixed top-5 right-5 flex flex-col items-end gap-4 z-20">
+        <AnalogClock />
+        <DigitalClock />
+      </div>
+      {/* تقویم: پایین چپ */}
+      <div className="fixed bottom-5 left-5 z-20">
         <CalendarWidget />
       </div>
     </div>
