@@ -37,7 +37,7 @@ body,
   inset: 0;
   width: 100vw;
   height: 100vh;
-  background: url('/pic12.jpg') center center / cover no-repeat;
+  /* background: url('/pic12.jpg') center center / cover no-repeat; */
   opacity: 0.85;
   z-index: 0;
   pointer-events: none;
