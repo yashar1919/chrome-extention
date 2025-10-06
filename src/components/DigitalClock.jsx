@@ -1,11 +1,31 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import VanillaTilt from "vanilla-tilt";
 
 function DigitalClock() {
   const [time, setTime] = useState(new Date());
+  const clockRef = useRef(null);
 
   useEffect(() => {
     const interval = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    if (clockRef.current) {
+      VanillaTilt.init(clockRef.current, {
+        max: 18,
+        speed: 400,
+        glare: true,
+        "max-glare": 0.25,
+        scale: 1.04,
+      });
+    }
+    return () => {
+      if (clockRef.current && clockRef.current.vanillaTilt) {
+        //eslint-disable-next-line
+        clockRef.current.vanillaTilt.destroy();
+      }
+    };
   }, []);
 
   const hours = time.getHours();
@@ -17,14 +37,14 @@ function DigitalClock() {
 
   return (
     <div
+      ref={clockRef}
       className="glass-black flex items-center justify-center rounded-2xl mt-2"
       style={{
         width: 220,
         height: 50,
-        //position: "relative",
       }}
     >
-      <div className="">
+      <div>
         {/* ساعت */}
         <span style={{ fontSize: 30, fontWeight: 200, color: "#fff" }}>
           {pad(hours)}

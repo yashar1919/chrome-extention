@@ -97,7 +97,7 @@ function AnalogClock() {
           className="absolute left-1/2 top-1/2 rounded origin-bottom"
           style={{
             width: "2px",
-            height: "68px",
+            height: "72px",
             background: "linear-gradient(180deg, #a78bfa 0%, #f472b6 100%)",
             boxShadow: "0 0 8px 2px #a78bfa88",
             transform: `translate(-50%, -100%) rotate(${sec * 6}deg)`,

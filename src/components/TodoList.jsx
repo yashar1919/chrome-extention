@@ -1,12 +1,27 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { ConfigProvider, theme, Checkbox, Popconfirm, message } from "antd";
-import { DeleteOutlined, EditOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  QuestionCircleOutlined,
+} from "@ant-design/icons";
 
 function TodoList() {
   const [todos, setTodos] = useState([]);
   const [input, setInput] = useState("");
   const [editId, setEditId] = useState(null);
   const inputRef = useRef(null);
+
+  // خواندن todoها از localStorage هنگام mount
+  useEffect(() => {
+    const saved = localStorage.getItem("todos");
+    if (saved) setTodos(JSON.parse(saved));
+  }, []);
+
+  // ذخیره todoها در localStorage هر بار که تغییر کردند
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
 
   const addOrUpdateTodo = (e) => {
     e.preventDefault();
@@ -88,7 +103,7 @@ function TodoList() {
         {todos.map((todo) => (
           <div
             key={todo.id}
-            className={`flex items-center justify-between px-3 py-2 rounded-lg bg-black/20 border border-purple-300 transition group`}
+            className={`flex items-center justify-between px-3 py-2 rounded-lg bg-black/20 border border-purple-300 transition group hover:bg-white/10`}
           >
             <ConfigProvider
               theme={{
