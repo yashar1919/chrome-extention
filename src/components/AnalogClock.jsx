@@ -106,7 +106,7 @@ function AnalogClock() {
         />
         {/* مرکز */}
         <div
-          className="absolute left-1/2 top-1/2 w-4 h-4 rounded-full border-2 border-white/60"
+          className="absolute left-1/2 top-1/2 w-3 h-3 rounded-full border-2 border-white/60"
           style={{
             background: "rgba(168,139,250,0.25)",
             backdropFilter: "blur(6px)",
