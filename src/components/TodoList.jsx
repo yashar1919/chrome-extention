@@ -64,7 +64,7 @@ function TodoList() {
   };
 
   return (
-    <div className="flex flex-col h-full glass-black w-[300px] rounded-2xl p-5">
+    <div className="flex flex-col glass-black w-[300px] rounded-2xl p-5 h-full min-h-0">
       <h2 className="text-xl font-bold text-white mb-4">لیست کارها</h2>
       <form onSubmit={addOrUpdateTodo} className="flex mb-4 gap-2">
         <input

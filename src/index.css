@@ -96,21 +96,57 @@ body,
 
 
 .custom-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: #a78bfa #232136;
-  /* thumb, track */
+  scrollbar-width: none;
+  scrollbar-color: rgba(167, 139, 250, 0.4) transparent;
+  /* thumb نازک و شفاف، track شفاف */
 }
 
 .custom-scrollbar::-webkit-scrollbar {
-  width: 3px;
+  width: 1px; /* خیلی نازک‌تر */
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: linear-gradient(120deg, #a78bfa 40%, #f472b6 100%);
-  border-radius: 3px;
+  background: rgba(167, 139, 250, 0.3); /* شفاف‌تر */
+  /* border-radius: 2px; */
+  transition: background 0.2s ease; /* انیمیشن نرم */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(167, 139, 250, 0.6); /* فقط هنگام hover پررنگ‌تر */
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(30, 27, 75, 0.3);
-  border-radius: 3px;
+  background: transparent; /* کاملاً شفاف */
+}
+
+/* کلاس برای محدود کردن تعداد خطوط متن */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* افکت hover برای کارت‌های بوکمارک */
+.bookmark-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px 0 rgba(168, 85, 247, 0.25);
+}
+
+/* انیمیشن برای آیکون‌ها */
+.bookmark-icon {
+  transition: transform 0.2s ease-in-out;
+}
+
+.bookmark-card:hover .bookmark-icon {
+  transform: scale(1.1);
 }

@@ -3,6 +3,7 @@ import AnalogClock from "./components/AnalogClock";
 import CalendarWidget from "./components/CalendarWidget";
 import DigitalClock from "./components/DigitalClock";
 import TodoList from "./components/TodoList";
+import BookmarkCards from "./components/BookmarkCards";
 import VanillaTilt from "vanilla-tilt";
 import { ConfigProvider, message, theme } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
@@ -153,12 +154,34 @@ function App() {
 
   return (
     <div
-      className="bg min-h-screen w-full"
+      className="bg min-h-screen w-full grid-container"
       style={{
         backgroundImage: `url(${allImages[bgIndex]})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         transition: "background-image 0.5s",
+        display: "grid",
+        gridTemplateColumns:
+          windowHeight < 700 || window.innerWidth < 768
+            ? "280px 1fr 280px"
+            : window.innerWidth < 1024
+            ? "200px 1fr 250px"
+            : "auto 1fr auto",
+        gridTemplateRows: windowHeight < 700 ? "1fr auto" : "auto 1fr auto",
+        gap: windowHeight < 700 ? "5px" : "10px",
+        padding: "10px",
+        minHeight: "100vh",
+        gridTemplateAreas:
+          windowHeight < 700 || window.innerWidth < 768
+            ? `
+            "left center right"
+            "left bottom-center bottom-center"
+          `
+            : `
+            "left-top center right"
+            "left-bottom center right"
+            "left-bottom bottom-center right"
+          `,
       }}
     >
       <ConfigProvider
@@ -168,120 +191,160 @@ function App() {
         }}
       >
         {contextHolder}
-        {/* سوییچر پس‌زمینه - وسط پایین صفحه */}
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-2 bg-black/30 rounded-xl p-2 backdrop-blur-md">
-          {allImages.map((img, idx) => (
-            <div key={img} className="relative group">
-              <button
-                onClick={() => setBgIndex(idx)}
-                className={`w-5 h-5 rounded-lg border cursor-pointer ${
-                  bgIndex === idx
-                    ? "border-pink-400 ring-1 ring-pink-400"
-                    : "border-transparent"
-                } overflow-hidden transition`}
+
+        {/* Grid Area 1: بخش چپ - ساعت و کارت خوش‌آمدید */}
+        {!isShort && (
+          <div className="z-20" style={{ gridArea: "left-top" }}>
+            <div className="flex flex-row items-start gap-4">
+              <div
+                ref={welcomeRef}
+                className="glass-black rounded-xl px-4 py-6 text-white text-lg font-semibold shadow-lg flex flex-col items-center justify-center"
                 style={{
-                  backgroundImage: `url(${img})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
+                  maxWidth: 168,
+                  width: 168,
+                  minHeight: 110,
+                  height: 255,
+                  textAlign: "center",
+                  whiteSpace: "normal",
+                  wordBreak: "break-word",
+                  direction: "rtl",
                 }}
-                title={`پس‌زمینه ${idx + 1}`}
-              />
-              {/* دکمه حذف عکس */}
-              <button
-                className="absolute -top-2 -right-2 w-4 h-4 rounded-full bg-black/70 text-xs text-white opacity-0 group-hover:opacity-100 transition flex items-center justify-center"
-                style={{ zIndex: 10 }}
-                onClick={() => handleDeleteImage(idx)}
-                title="حذف عکس"
-                tabIndex={-1}
               >
-                ×
-              </button>
-            </div>
-          ))}
-          {/* دکمه اضافه کردن عکس دلخواه */}
-          <label
-            className={`w-5 h-5 flex items-center justify-center rounded-lg border border-dashed border-purple-400 cursor-pointer bg-black/40 hover:bg-purple-400/30 transition ${
-              allImages.length >= 15 ? "opacity-50 pointer-events-none" : ""
-            }`}
-          >
-            <span className="text-purple-400 text-xl font-bold mt-1">
-              <PlusOutlined style={{ width: "15px", height: "15px" }} />
-            </span>
-            <input
-              type="file"
-              accept="image/*"
-              style={{ display: "none" }}
-              onChange={handleAddImage}
-              disabled={allImages.length >= 15}
-            />
-          </label>
-          {/* دکمه ریست همه تصاویر */}
-          <button
-            className="w-9 h-5 flex items-center justify-center rounded-lg border cursor-pointer border-amber-400 bg-black/40 hover:bg-amber-400/30 transition ml-2"
-            title="بازگردانی تصاویر به حالت اولیه"
-            onClick={() => {
-              setCustomImages([]);
-              setDefaultImages(BG_IMAGES);
-              setBgIndex(0);
-              messageApi.open({
-                type: "success",
-                content: "تصاویر پس‌زمینه به حالت اولیه بازگردانی شد",
-              });
-              localStorage.removeItem("customImages");
-              localStorage.removeItem("defaultImages");
-              localStorage.setItem("bgIndex", "0");
-            }}
-          >
-            <span className="text-amber-400 text-[10px]">Reset</span>
-          </button>
-        </div>
-        {/* ساعت‌ها و کارت خوش آمدید */}
-        {isShort ? (
-          // حالت ارتفاع کم: ساعت آنالوگ و دیجیتال وسط و بالا
-          <div className="fixed top-3 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-20">
-            <AnalogClock />
-            <DigitalClock />
-          </div>
-        ) : (
-          // حالت عادی: ساعت‌ها و کارت خوش آمدید بالا چپ
-          <div className="fixed top-5 left-5 flex flex-row items-start gap-4 z-20">
-            {/* کارت شیشه‌ای خوش آمدید کنار ساعت */}
-            <div
-              ref={welcomeRef}
-              className="glass-black rounded-xl px-4 py-6 text-white text-lg font-semibold shadow-lg flex flex-col items-center justify-center"
-              style={{
-                maxWidth: 168,
-                width: 168,
-                minHeight: 110,
-                height: 255,
-                textAlign: "center",
-                whiteSpace: "normal",
-                wordBreak: "break-word",
-                direction: "rtl",
-              }}
-            >
-              به
-              <span className="text-4xl text-purple-400 font-extrabold my-5 block">
-                کیفور
-              </span>
-              خوش آمدید😍
-            </div>
-            <div className="flex flex-col items-center gap-4">
-              <AnalogClock />
-              <DigitalClock />
+                به
+                <span className="text-4xl text-purple-400 font-extrabold my-5 block">
+                  کیفور
+                </span>
+                خوش آمدید😍
+              </div>
+              <div className="flex flex-col items-center gap-4">
+                <AnalogClock />
+                <DigitalClock />
+              </div>
             </div>
           </div>
         )}
-        {/* تقویم: پایین چپ */}
-        <div className="fixed bottom-5 left-5 z-20">
-          <CalendarWidget />
-        </div>
-        {/* کارت شیشه‌ای وسط صفحه */}
+
+        {/* Grid Area 2: بخش وسط - کارت‌های بوکمارک */}
         <div
-          className="fixed right-0 top-0 bottom-0 z-10 pointer-events-auto p-5"
-          style={{ direction: "rtl" }}
+          className="z-10"
+          style={{ gridArea: "center", alignSelf: "start" }}
+        >
+          <BookmarkCards />
+        </div>
+
+        {/* Grid Area 3: بخش راست - TodoList */}
+        <div
+          className="z-10 h-full"
+          style={{
+            gridArea: "right",
+            direction: "rtl",
+          }}
         >
           <TodoList />
+        </div>
+
+        {/* تقویم و ساعت - سمت چپ */}
+        <div
+          className="z-20"
+          style={{
+            gridArea: isShort ? "left" : "left-bottom",
+            alignSelf: isShort ? "start" : "end",
+            justifySelf: isShort ? "start" : "center",
+          }}
+        >
+          <div
+            style={{
+              transform: isShort ? "scale(0.75)" : "scale(1)",
+              transformOrigin: isShort ? "top left" : "bottom left", // همیشه از چپ scale بشه
+            }}
+          >
+            {/* ساعت‌ها بالای تقویم - فقط در حالت کوتاه */}
+            {isShort && (
+              <div style={{ marginBottom: "15px", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
+                <div style={{ transform: "scale(1.1)" }}>
+                  <AnalogClock />
+                </div>
+                <div style={{ transform: "scale(1.1)" }}>
+                  <DigitalClock />
+                </div>
+              </div>
+            )}
+            <CalendarWidget />
+          </div>
+        </div>
+
+        {/* Grid Area 5: بخش پایین وسط - سوییچر پس‌زمینه */}
+        <div
+          className="z-30"
+          style={{
+            gridArea: "bottom-center",
+            justifySelf: "center",
+            alignSelf: "end",
+          }}
+        >
+          <div className="flex gap-2 bg-black/30 rounded-xl p-2 backdrop-blur-md">
+            {allImages.map((img, idx) => (
+              <div key={img} className="relative group">
+                <button
+                  onClick={() => setBgIndex(idx)}
+                  className={`w-5 h-5 rounded-lg border cursor-pointer ${
+                    bgIndex === idx
+                      ? "border-pink-400 ring-1 ring-pink-400"
+                      : "border-transparent"
+                  } overflow-hidden transition`}
+                  style={{
+                    backgroundImage: `url(${img})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }}
+                  title={`پس‌زمینه ${idx + 1}`}
+                />
+                <button
+                  className="absolute -top-2 -right-2 w-4 h-4 rounded-full bg-black/70 text-xs text-white opacity-0 group-hover:opacity-100 transition flex items-center justify-center"
+                  style={{ zIndex: 10 }}
+                  onClick={() => handleDeleteImage(idx)}
+                  title="حذف عکس"
+                  tabIndex={-1}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+            <label
+              className={`w-5 h-5 flex items-center justify-center rounded-lg border border-dashed border-purple-400 cursor-pointer bg-black/40 hover:bg-purple-400/30 transition ${
+                allImages.length >= 15 ? "opacity-50 pointer-events-none" : ""
+              }`}
+            >
+              <span className="text-purple-400 text-xl font-bold mt-1">
+                <PlusOutlined style={{ width: "15px", height: "15px" }} />
+              </span>
+              <input
+                type="file"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={handleAddImage}
+                disabled={allImages.length >= 15}
+              />
+            </label>
+            <button
+              className="w-9 h-5 flex items-center justify-center rounded-lg border cursor-pointer border-amber-400 bg-black/40 hover:bg-amber-400/30 transition ml-2"
+              title="بازگردانی تصاویر به حالت اولیه"
+              onClick={() => {
+                setCustomImages([]);
+                setDefaultImages(BG_IMAGES);
+                setBgIndex(0);
+                messageApi.open({
+                  type: "success",
+                  content: "تصاویر پس‌زمینه به حالت اولیه بازگردانی شد",
+                });
+                localStorage.removeItem("customImages");
+                localStorage.removeItem("defaultImages");
+                localStorage.setItem("bgIndex", "0");
+              }}
+            >
+              <span className="text-amber-400 text-[10px]">Reset</span>
+            </button>
+          </div>
         </div>
       </ConfigProvider>
     </div>
