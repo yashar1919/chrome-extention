@@ -12,8 +12,25 @@ import weekends from "react-multi-date-picker/plugins/highlight_weekends";
 import DateObject from "react-date-object";
 import VanillaTilt from "vanilla-tilt";
 
-function CalendarWidget() {
+function CalendarWidget({ currentTheme = "purple" }) {
   const calRef = useRef(null);
+
+  // تطبیق تم‌های Calendar با تم‌های اپلیکیشن
+  const getCalendarThemeClass = (theme) => {
+    const themeMap = {
+      purple: "purple",
+      red: "red",
+      amber: "yellow", // نارنجی طلایی -> زرد
+      yellow: "yellow",
+      lime: "green", // سبز لیمویی -> سبز
+      teal: "teal", // سبز آبی -> teal
+      sky: "", // آبی آسمانی -> دیفالت (آبی)
+      cyan: "teal", // آبی مایل به سبز -> teal
+      indigo: "purple", // نیلی -> بنفش
+      rose: "red", // صورتی گلی -> قرمز
+    };
+    return themeMap[theme] || "";
+  };
 
   useEffect(() => {
     if (calRef.current) {
@@ -40,7 +57,9 @@ function CalendarWidget() {
         <Calendar
           calendar={persian}
           locale={persian_fa}
-          className="!bg-transparent !shadow-none purple bg-dark multi-locale-days"
+          className={`!bg-transparent !shadow-none ${getCalendarThemeClass(
+            currentTheme
+          )} bg-dark multi-locale-days`}
           plugins={[weekends()]}
           mapDays={({ date }) => {
             const miladi = new DateObject(date.toDate()).convert(

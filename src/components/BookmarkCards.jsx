@@ -9,6 +9,7 @@ import {
   FolderOpenOutlined,
   DownOutlined,
   RightOutlined,
+  QuestionCircleOutlined,
 } from "@ant-design/icons";
 import {
   Modal,
@@ -193,13 +194,18 @@ const FolderCard = ({ folder, onToggle, onDelete, bookmarksCount }) => {
         /* className="rounded-t-xl p-3 text-white cursor-pointer group hover:border-purple-400/50 transition-all duration-300 flex items-center justify-between w-full folder-header" */
         className={`${
           folder.isOpen ? "rounded-t-xl" : "rounded-xl"
-        } p-3 text-white cursor-pointer group hover:border-purple-400/50 transition-all duration-300 flex items-center justify-between w-full folder-header`}
+        } p-3 text-white cursor-pointer group transition-all duration-300 flex items-center justify-between w-full folder-header`}
         onClick={() => onToggle(folder.id)}
         style={{
           backgroundColor: "rgba(0, 0, 0, 0.6)", // بک‌گراند تیره‌تر
           backdropFilter: "blur(20px)", // blur بیشتر برای فولدرها
-          WebkitBackdropFilter: "blur(20px)",
-          border: "1px solid rgba(168, 85, 247, 0.3)",
+          border: "1px solid var(--theme-border)",
+        }}
+        onMouseEnter={(e) => {
+          e.target.style.borderColor = "var(--theme-border)";
+        }}
+        onMouseLeave={(e) => {
+          e.target.style.borderColor = "var(--theme-border)";
         }}
       >
         <div className="flex items-center gap-3">
@@ -207,7 +213,10 @@ const FolderCard = ({ folder, onToggle, onDelete, bookmarksCount }) => {
           <div
             className={`folder-icon-transition ${folder.isOpen ? "open" : ""}`}
           >
-            <RightOutlined className="text-purple-400 text-sm" />
+            <RightOutlined
+              className="text-sm"
+              style={{ color: "var(--theme-secondary)" }}
+            />
           </div>
 
           {/* آیکون فولدر */}
@@ -216,42 +225,56 @@ const FolderCard = ({ folder, onToggle, onDelete, bookmarksCount }) => {
           </span>
 
           {/* نام فولدر */}
-          <h3 className="text-purple-200 font-bold">{folder.title}</h3>
+          <h3 className="font-bold" style={{ color: "var(--theme-text)" }}>
+            {folder.title}
+          </h3>
 
           {/* تعداد bookmark ها */}
-          <span className="text-xs text-purple-300 bg-purple-400/20 px-2 py-1 rounded">
+          <span
+            className="text-xs px-2 py-1 rounded"
+            style={{
+              color: "var(--theme-secondary)",
+              backgroundColor: "var(--theme-background)",
+            }}
+          >
             {bookmarksCount}
           </span>
         </div>
 
         {/* دکمه حذف فولدر */}
-        <Popconfirm
-          title="حذف فولدر"
-          description={`آیا از حذف فولدر "${folder.title}" اطمینان دارید؟ تمام بوکمارک‌های داخل آن آزاد خواهند شد.`}
-          onConfirm={(e) => {
-            e?.stopPropagation();
-            onDelete(folder.id);
-          }}
-          onCancel={(e) => {
-            e?.stopPropagation();
-          }}
-          okText="بله"
-          cancelText="انصراف"
-          okButtonProps={{
-            style: {
-              backgroundColor: "#dc2626",
-              borderColor: "#dc2626",
+        <ConfigProvider
+          theme={{
+            algorithm: theme.darkAlgorithm,
+            components: {
+              Popconfirm: {
+                colorPrimary: "var(--theme-primary)",
+              },
             },
           }}
         >
-          <Button
-            size="small"
-            type="text"
-            icon={<DeleteOutlined style={{ fontSize: "12px" }} />}
-            className="text-red-400 hover:text-red-300 hover:bg-red-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-            onClick={(e) => e.stopPropagation()}
-          />
-        </Popconfirm>
+          <Popconfirm
+            title="حذف فولدر"
+            description={`آیا از حذف فولدر "${folder.title}" اطمینان دارید؟ تمام بوکمارک‌های داخل آن آزاد خواهند شد.`}
+            icon={<QuestionCircleOutlined style={{ color: "red" }} />}
+            onConfirm={(e) => {
+              e?.stopPropagation();
+              onDelete(folder.id);
+            }}
+            onCancel={(e) => {
+              e?.stopPropagation();
+            }}
+            okText="حذف"
+            cancelText="لغو"
+          >
+            <Button
+              size="small"
+              type="text"
+              icon={<DeleteOutlined style={{ fontSize: "12px" }} />}
+              className="text-red-400 hover:text-red-300 hover:bg-red-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </Popconfirm>
+        </ConfigProvider>
       </div>
     </div>
   );
@@ -312,7 +335,7 @@ const SortableBookmarkCard = ({
         setNodeRef(el);
         cardRef.current = el;
       }}
-      className={`glass-black rounded-xl p-4 text-white group hover:border-purple-400/50 transition-all duration-300 relative bookmark-card cursor-pointer ${
+      className={`glass-black rounded-xl p-4 text-white group transition-all duration-300 relative bookmark-card cursor-pointer ${
         isInFolder ? "folder-bookmark-card" : ""
       }`}
       style={{
@@ -323,14 +346,33 @@ const SortableBookmarkCard = ({
         alignItems: "center",
         justifyContent: "center",
         textAlign: "center",
+        border: "1px solid var(--theme-border)",
         ...style,
       }}
       {...attributes}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = "var(--theme-secondary)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = "var(--theme-border)";
+      }}
     >
       {/* دکمه Drag Handle - گوشه بالا سمت چپ */}
       <div
         {...listeners}
-        className="absolute top-1 left-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-grab active:cursor-grabbing w-6 h-6 flex items-center justify-center text-purple-400 hover:text-purple-300 hover:bg-purple-400/20 rounded"
+        className="absolute top-1 left-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-grab active:cursor-grabbing w-6 h-6 flex items-center justify-center rounded"
+        style={{
+          color: "var(--theme-secondary)",
+          backgroundColor: "transparent",
+        }}
+        onMouseEnter={(e) => {
+          e.target.style.color = "var(--theme-text)";
+          e.target.style.backgroundColor = "var(--theme-background)";
+        }}
+        onMouseLeave={(e) => {
+          e.target.style.color = "var(--theme-secondary)";
+          e.target.style.backgroundColor = "transparent";
+        }}
       >
         <DragOutlined style={{ fontSize: "12px" }} />
       </div>
@@ -345,7 +387,10 @@ const SortableBookmarkCard = ({
         </div>
 
         {/* عنوان */}
-        <h3 className="text-sm font-bold text-purple-200 mb-1 line-clamp-1">
+        <h3
+          className="text-sm font-bold mb-1 line-clamp-1"
+          style={{ color: "var(--theme-text)" }}
+        >
           {bookmark.title}
         </h3>
       </div>
@@ -362,33 +407,39 @@ const SortableBookmarkCard = ({
             onEdit(bookmark);
           }}
         />
-        <Popconfirm
-          title="حذف بوکمارک"
-          description="آیا از حذف این بوکمارک اطمینان دارید؟"
-          onConfirm={(e) => {
-            e?.stopPropagation();
-            onDelete(bookmark.id);
-          }}
-          onCancel={(e) => {
-            e?.stopPropagation();
-          }}
-          okText="بله"
-          cancelText="انصراف"
-          okButtonProps={{
-            style: {
-              backgroundColor: "#dc2626",
-              borderColor: "#dc2626",
+        <ConfigProvider
+          theme={{
+            algorithm: theme.darkAlgorithm,
+            components: {
+              Popconfirm: {
+                colorPrimary: "var(--theme-primary)",
+              },
             },
           }}
         >
-          <Button
-            size="small"
-            type="text"
-            icon={<DeleteOutlined style={{ fontSize: "12px" }} />}
-            className="text-red-400 hover:text-red-300 hover:bg-red-400/20 w-6 h-6 p-0 flex items-center justify-center"
-            onClick={(e) => e.stopPropagation()}
-          />
-        </Popconfirm>
+          <Popconfirm
+            title="حذف بوکمارک"
+            description="آیا از حذف این بوکمارک اطمینان دارید؟"
+            icon={<QuestionCircleOutlined style={{ color: "red" }} />}
+            onConfirm={(e) => {
+              e?.stopPropagation();
+              onDelete(bookmark.id);
+            }}
+            onCancel={(e) => {
+              e?.stopPropagation();
+            }}
+            okText="حذف"
+            cancelText="لغو"
+          >
+            <Button
+              size="small"
+              type="text"
+              icon={<DeleteOutlined style={{ fontSize: "12px" }} />}
+              className="text-red-400 hover:text-red-300 hover:bg-red-400/20 w-6 h-6 p-0 flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </Popconfirm>
+        </ConfigProvider>
       </div>
     </div>
   );
@@ -680,7 +731,7 @@ const BookmarkCards = () => {
             id: 11,
             title: "دیجی‌کالا",
             url: "https://digikala.com",
-            icon: "�",
+            icon: "🛒",
             folderId: "general",
           },
           {
@@ -1037,7 +1088,13 @@ const BookmarkCards = () => {
   };
 
   const getIconElement = (icon) => {
-    if (!icon) return <GlobalOutlined className="text-2xl text-purple-300" />;
+    if (!icon)
+      return (
+        <GlobalOutlined
+          className="text-2xl"
+          style={{ color: "var(--theme-secondary)" }}
+        />
+      );
 
     // بررسی ایموجی‌ها با regex جامع‌تر
     const emojiRegex =
@@ -1053,7 +1110,12 @@ const BookmarkCards = () => {
     }
 
     // در غیر این صورت آیکون پیش‌فرض
-    return <GlobalOutlined className="text-2xl text-purple-300" />;
+    return (
+      <GlobalOutlined
+        className="text-2xl"
+        style={{ color: "var(--theme-secondary)" }}
+      />
+    );
   };
 
   return (
@@ -1103,7 +1165,7 @@ const BookmarkCards = () => {
 
                       {/* کارت افزودن بوکمارک بدون فولدر */}
                       <div
-                        className="glass-black rounded-xl p-4 text-white cursor-pointer border-dashed border-purple-400/50 hover:border-purple-400 hover:bg-purple-400/10 transition-all duration-300 group"
+                        className="glass-black rounded-xl p-4 text-white cursor-pointer border-dashed transition-all duration-300 group"
                         style={{
                           width: "140px",
                           height: "100px",
@@ -1112,14 +1174,32 @@ const BookmarkCards = () => {
                           alignItems: "center",
                           justifyContent: "center",
                           textAlign: "center",
+                          borderColor: "var(--theme-border)",
+                          backgroundColor: "rgba(0,0,0,0.3)",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.style.borderColor = "var(--theme-secondary)";
+                          e.target.style.backgroundColor =
+                            "var(--theme-background)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.borderColor = "var(--theme-border)";
+                          e.target.style.backgroundColor = "rgba(0,0,0,0.3)";
                         }}
                         onClick={() => {
                           setActiveFolder(null); // بدون فولدر
                           handleOpenModal();
                         }}
                       >
-                        <PlusOutlined className="text-2xl text-purple-400 mb-2 group-hover:scale-110 transition-transform duration-200" />
-                        <p className="text-purple-300 font-medium text-xs">
+                        <PlusOutlined
+                          className="text-2xl mb-2 group-hover:scale-110 transition-transform duration-200"
+                          style={{ color: "var(--theme-secondary)" }}
+                        />
+                        <p
+                          id="background-color-none"
+                          className="font-medium text-xs"
+                          style={{ color: "var(--theme-text)" }}
+                        >
                           افزودن بوکمارک
                         </p>
                       </div>
@@ -1136,7 +1216,7 @@ const BookmarkCards = () => {
         {getBookmarksWithoutFolder().length === 0 && (
           <div className="mb-6">
             <div
-              className="glass-black rounded-xl p-4 text-white cursor-pointer border-dashed border-purple-400/50 hover:border-purple-400 hover:bg-purple-400/10 transition-all duration-300 group"
+              className="glass-black rounded-xl p-4 text-white cursor-pointer border-dashed transition-all duration-300 group"
               style={{
                 width: "140px",
                 height: "100px",
@@ -1146,14 +1226,31 @@ const BookmarkCards = () => {
                 justifyContent: "center",
                 textAlign: "center",
                 margin: "0 auto",
+                borderColor: "var(--theme-border)",
+                backgroundColor: "rgba(0,0,0,0.3)",
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.borderColor = "var(--theme-secondary)";
+                e.target.style.backgroundColor = "var(--theme-background)";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.borderColor = "var(--theme-border)";
+                e.target.style.backgroundColor = "rgba(0,0,0,0.3)";
               }}
               onClick={() => {
                 setActiveFolder(null); // بدون فولدر
                 handleOpenModal();
               }}
             >
-              <PlusOutlined className="text-2xl text-purple-400 mb-2 group-hover:scale-110 transition-transform duration-200" />
-              <p className="text-purple-300 font-medium text-xs">
+              <PlusOutlined
+                className="text-2xl mb-2 group-hover:scale-110 transition-transform duration-200"
+                style={{ color: "var(--theme-secondary)" }}
+              />
+              <p
+                className="font-medium text-xs"
+                id="background-color-none"
+                style={{ color: "var(--theme-text)" }}
+              >
                 افزودن بوکمارک
               </p>
             </div>
@@ -1235,7 +1332,7 @@ const BookmarkCards = () => {
 
                             {/* کارت افزودن بوکمارک جدید */}
                             <div
-                              className="glass-black rounded-xl p-4 text-white cursor-pointer border-dashed border-purple-400/50 hover:border-purple-400 hover:bg-purple-400/10 transition-all duration-300 group"
+                              className="glass-black rounded-xl p-4 text-white cursor-pointer border-dashed transition-all duration-300 group"
                               style={{
                                 width: "140px",
                                 height: "100px",
@@ -1244,14 +1341,35 @@ const BookmarkCards = () => {
                                 alignItems: "center",
                                 justifyContent: "center",
                                 textAlign: "center",
+                                borderColor: "var(--theme-border)",
+                                backgroundColor: "rgba(0,0,0,0.3)",
+                              }}
+                              onMouseEnter={(e) => {
+                                e.target.style.borderColor =
+                                  "var(--theme-secondary)";
+                                e.target.style.backgroundColor =
+                                  "var(--theme-background)";
+                              }}
+                              onMouseLeave={(e) => {
+                                e.target.style.borderColor =
+                                  "var(--theme-border)";
+                                e.target.style.backgroundColor =
+                                  "rgba(0,0,0,0.3)";
                               }}
                               onClick={() => {
                                 setActiveFolder(folder.id);
                                 handleOpenModal();
                               }}
                             >
-                              <PlusOutlined className="text-2xl text-purple-400 mb-2 group-hover:scale-110 transition-transform duration-200" />
-                              <p className="text-purple-300 font-medium text-xs">
+                              <PlusOutlined
+                                className="text-2xl mb-2 group-hover:scale-110 transition-transform duration-200"
+                                style={{ color: "var(--theme-secondary)" }}
+                              />
+                              <p
+                                className="font-medium text-xs"
+                                style={{ color: "var(--theme-text)" }}
+                                id="background-color-none"
+                              >
                                 افزودن بوکمارک
                               </p>
                             </div>
@@ -1273,13 +1391,35 @@ const BookmarkCards = () => {
             onClick={() => setShowFolderModal(true)}
           >
             {/* پس‌زمینه blur */}
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/30 to-blue-500/30 rounded-2xl blur-lg transform group-hover:scale-110 transition-all duration-300"></div>
+            {/* <div className="absolute inset-0 bg-gradient-to-r from-purple-500/30 to-blue-500/30 rounded-2xl blur-lg transform group-hover:scale-110 transition-all duration-300"></div> */}
 
             {/* کانتینر اصلی */}
-            <div className="relative bg-black/40 backdrop-blur-xl border border-purple-400/30 rounded-2xl px-5 py-2 group-hover:border-purple-400/60 group-hover:bg-black/50 transition-all duration-300">
-              <div className="flex items-center justify-center gap-3">
+            <div
+              className="relative backdrop-blur-xl rounded-2xl px-5 py-2 transition-all duration-300"
+              style={{
+                backgroundColor: "rgba(0,0,0,0.4)",
+                border: "1px solid var(--theme-border)",
+              }}
+              /* onMouseEnter={(e) => {
+                e.target.style.borderColor = "var(--theme-secondary)";
+                e.target.style.backgroundColor = "rgba(0,0,0,0.5)";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.borderColor = "var(--theme-border)";
+                e.target.style.backgroundColor = "rgba(0,0,0,0.4)";
+              }} */
+            >
+              <div
+                className="flex items-center justify-center gap-3"
+                id="background-color-none"
+              >
                 {/* آیکون */}
-                <div className="w-7 h-7 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <div
+                  className="w-7 h-7 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
+                  style={{
+                    background: "var(--theme-gradient)",
+                  }}
+                >
                   <PlusOutlined
                     className="text-white text-lg"
                     id="svg-color-plus-icon-antd-for-add-new-folder"
@@ -1288,17 +1428,23 @@ const BookmarkCards = () => {
 
                 {/* متن */}
                 <div className="text-center">
-                  <span className="text-purple-200 text-[15px] group-hover:text-purple-400 transition-colors duration-300">
+                  <span
+                    className="text-[15px] transition-colors duration-300 text-white hover:text-[var(--theme-text)]"
+                    id="background-color-none"
+                    //style={{ color: "var(--theme-text)" }}
+                  >
                     افزودن فولدر جدید
                   </span>
-                  {/* <p className="text-purple-300/80 text-xs mt-1">
-                    دسته‌بندی کنید
-                  </p> */}
                 </div>
               </div>
 
               {/* خط نور */}
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-purple-400 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              {/* <div 
+                className="absolute bottom-0 left-0 right-0 h-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{
+                  background: `linear-gradient(to right, transparent, var(--theme-secondary), transparent)`,
+                }}
+              ></div> */}
             </div>
           </div>
         </div>
@@ -1325,7 +1471,10 @@ const BookmarkCards = () => {
         <div className="space-y-4" style={{ direction: "rtl" }}>
           {/* عنوان سفارشی */}
           <div className="text-center mb-6">
-            <h3 className="text-lg font-bold text-purple-300">
+            <h3
+              className="text-lg font-bold"
+              style={{ color: "var(--theme-secondary)" }}
+            >
               {editingBookmark ? "ویرایش بوکمارک" : "افزودن بوکمارک جدید"}
             </h3>
           </div>
@@ -1417,7 +1566,10 @@ const BookmarkCards = () => {
                       );
                       setForm((prev) => ({ ...prev, icon: suggestedIcon }));
                     }}
-                    className="text-purple-400 border-purple-400 hover:text-purple-300 hover:border-purple-300"
+                    style={{
+                      color: "var(--theme-secondary)",
+                      borderColor: "var(--theme-secondary)",
+                    }}
                   >
                     استفاده
                   </Button>
@@ -1426,7 +1578,10 @@ const BookmarkCards = () => {
                   size="small"
                   type="dashed"
                   onClick={() => setShowIconPicker(!showIconPicker)}
-                  className="text-blue-400 border-blue-400 hover:text-blue-300 hover:border-blue-300"
+                  style={{
+                    color: "var(--theme-text)",
+                    borderColor: "var(--theme-text)",
+                  }}
                 >
                   انتخاب
                 </Button>
@@ -1434,7 +1589,13 @@ const BookmarkCards = () => {
 
               {/* انتخابگر آیکون */}
               {showIconPicker && (
-                <div className="border border-purple-400/30 rounded-lg p-3 bg-black/20 backdrop-blur-sm">
+                <div
+                  className="rounded-lg p-3 backdrop-blur-sm"
+                  style={{
+                    border: "1px solid var(--theme-border)",
+                    backgroundColor: "rgba(0,0,0,0.2)",
+                  }}
+                >
                   {/* فیلتر دسته‌بندی */}
                   <div className="mb-3">
                     <Select
@@ -1463,7 +1624,17 @@ const BookmarkCards = () => {
                       .map(([key, data]) => (
                         <div
                           key={key}
-                          className="flex flex-col items-center p-2 rounded-lg cursor-pointer hover:bg-purple-400/20 transition-colors duration-200 group"
+                          className="flex flex-col items-center p-2 rounded-lg cursor-pointer transition-colors duration-200 group"
+                          style={{
+                            backgroundColor: "transparent",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.backgroundColor =
+                              "var(--theme-background)";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.backgroundColor = "transparent";
+                          }}
                           onClick={() => {
                             setForm((prev) => ({ ...prev, icon: data.emoji }));
                             setShowIconPicker(false);
@@ -1473,7 +1644,10 @@ const BookmarkCards = () => {
                           <span className="text-lg group-hover:scale-110 transition-transform duration-200">
                             {data.emoji}
                           </span>
-                          <span className="text-xs text-purple-300 mt-1 text-center leading-tight">
+                          <span
+                            className="text-xs mt-1 text-center leading-tight"
+                            style={{ color: "var(--theme-text)" }}
+                          >
                             {data.name.length > 8
                               ? data.name.substring(0, 8) + "..."
                               : data.name}
@@ -1512,8 +1686,8 @@ const BookmarkCards = () => {
               onClick={handleSave}
               className="flex-1 h-10 font-medium rounded-lg transition-all duration-200"
               style={{
-                backgroundColor: "#9333ea",
-                borderColor: "#9333ea",
+                backgroundColor: "var(--theme-primary)",
+                borderColor: "var(--theme-primary)",
               }}
             >
               {editingBookmark ? "ویرایش" : "افزودن"}
@@ -1553,7 +1727,10 @@ const BookmarkCards = () => {
           <div className="space-y-4" style={{ direction: "rtl" }}>
             {/* عنوان سفارشی */}
             <div className="text-center mb-6">
-              <h3 className="text-lg font-bold text-purple-300">
+              <h3
+                className="text-lg font-bold"
+                style={{ color: "var(--theme-secondary)" }}
+              >
                 افزودن فولدر جدید
               </h3>
             </div>
@@ -1606,8 +1783,8 @@ const BookmarkCards = () => {
                 onClick={createFolder}
                 className="flex-1 h-10 font-medium rounded-lg transition-all duration-200"
                 style={{
-                  backgroundColor: "#9333ea",
-                  borderColor: "#9333ea",
+                  backgroundColor: "var(--theme-primary)",
+                  borderColor: "var(--theme-primary)",
                 }}
               >
                 افزودن

@@ -55,10 +55,10 @@ function AnalogClock() {
               style={{
                 left: x,
                 top: y,
-                color: "oklch(90.2% 0.063 306.703)",
+                color: "var(--theme-text)",
                 fontWeight: 100,
                 transform: "translate(-50%, -50%)",
-                textShadow: "0 2px 8px #7c3aed88, 0 1px 0 #fff",
+                textShadow: "0 2px 8px var(--theme-background), 0 1px 0 #fff",
                 userSelect: "none",
               }}
             >
@@ -72,8 +72,8 @@ function AnalogClock() {
           style={{
             width: "5px",
             height: "38px",
-            background: "#f3e8ff",
-            boxShadow: "0 0 8px 2px #fff4",
+            background: "var(--theme-text)",
+            boxShadow: "0 0 8px 2px rgba(255,255,255,0.4)",
             transform: `translate(-50%, -100%) rotate(${
               hour * 30 + min / 2
             }deg)`,
@@ -86,8 +86,8 @@ function AnalogClock() {
           style={{
             width: "3px",
             height: "60px",
-            background: "#f3e8ff",
-            boxShadow: "0 0 8px 2px #a78bfa88",
+            background: "var(--theme-text)",
+            boxShadow: "0 0 8px 2px var(--theme-background)",
             transform: `translate(-50%, -100%) rotate(${min * 6}deg)`,
             zIndex: 2,
           }}
@@ -98,8 +98,8 @@ function AnalogClock() {
           style={{
             width: "2px",
             height: "72px",
-            background: "linear-gradient(180deg, #a78bfa 0%, #f472b6 100%)",
-            boxShadow: "0 0 8px 2px #a78bfa88",
+            background: "var(--theme-gradient)",
+            boxShadow: "0 0 8px 2px var(--theme-background)",
             transform: `translate(-50%, -100%) rotate(${sec * 6}deg)`,
             zIndex: 1,
           }}
@@ -108,11 +108,11 @@ function AnalogClock() {
         <div
           className="absolute left-1/2 top-1/2 w-3 h-3 rounded-full border-2 border-white/60"
           style={{
-            background: "rgba(168,139,250,0.25)",
+            background: "var(--theme-background)",
             backdropFilter: "blur(6px)",
             WebkitBackdropFilter: "blur(6px)",
             transform: "translate(-50%, -50%)",
-            boxShadow: "0 0 8px 2px #a78bfa55",
+            boxShadow: "0 0 8px 2px var(--theme-background)",
           }}
         />
       </div>

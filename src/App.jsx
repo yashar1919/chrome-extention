@@ -5,10 +5,134 @@ import DigitalClock from "./components/DigitalClock";
 import TodoList from "./components/TodoList";
 import BookmarkCards from "./components/BookmarkCards";
 import VanillaTilt from "vanilla-tilt";
-import { ConfigProvider, message, theme } from "antd";
+import { ConfigProvider, message, theme as antTheme } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 
-const BG_IMAGES = Array.from({ length: 12 }, (_, i) => `/pic${i + 1}.jpg`);
+const BG_IMAGES = Array.from({ length: 7 }, (_, i) => `/pic${i + 1}.jpg`);
+
+// تم‌های رنگی با رنگ‌های Tailwind
+const colorThemes = {
+  purple: {
+    name: "بنفش",
+    primary: "#9333ea",
+    primaryLight: "#a855f7",
+    secondary: "#c084fc",
+    accent: "#e879f9",
+    background: "rgba(147, 51, 234, 0.1)",
+    border: "rgba(147, 51, 234, 0.2)",
+    text: "#c084fc",
+    gradient: "linear-gradient(90deg, #a855f7, #e879f9)",
+    gradientButton: "linear-gradient(135deg, #9333ea, #e879f9)",
+  },
+  red: {
+    name: "قرمز",
+    primary: "#dc2626",
+    primaryLight: "#ef4444",
+    secondary: "#f87171",
+    accent: "#fca5a5",
+    background: "rgba(220, 38, 38, 0.1)",
+    border: "rgba(220, 38, 38, 0.2)",
+    text: "#f87171",
+    gradient: "linear-gradient(90deg, #ef4444, #fca5a5)",
+    gradientButton: "linear-gradient(135deg, #dc2626, #fca5a5)",
+  },
+  amber: {
+    name: "نارنجی طلایی",
+    primary: "#d97706",
+    primaryLight: "#f59e0b",
+    secondary: "#fbbf24",
+    accent: "#fcd34d",
+    background: "rgba(217, 119, 6, 0.1)",
+    border: "rgba(217, 119, 6, 0.2)",
+    text: "#fbbf24",
+    gradient: "linear-gradient(90deg, #f59e0b, #fcd34d)",
+    gradientButton: "linear-gradient(135deg, #d97706, #fcd34d)",
+  },
+  yellow: {
+    name: "زرد",
+    primary: "#ca8a04",
+    primaryLight: "#eab308",
+    secondary: "#facc15",
+    accent: "#fde047",
+    background: "rgba(202, 138, 4, 0.1)",
+    border: "rgba(202, 138, 4, 0.2)",
+    text: "#facc15",
+    gradient: "linear-gradient(90deg, #eab308, #fde047)",
+    gradientButton: "linear-gradient(135deg, #ca8a04, #fde047)",
+  },
+  lime: {
+    name: "سبز لیمویی",
+    primary: "#65a30d",
+    primaryLight: "#84cc16",
+    secondary: "#a3e635",
+    accent: "#bef264",
+    background: "rgba(101, 163, 13, 0.1)",
+    border: "rgba(101, 163, 13, 0.2)",
+    text: "#a3e635",
+    gradient: "linear-gradient(90deg, #84cc16, #bef264)",
+    gradientButton: "linear-gradient(135deg, #65a30d, #bef264)",
+  },
+  teal: {
+    name: "سبز آبی",
+    primary: "#0d9488",
+    primaryLight: "#14b8a6",
+    secondary: "#2dd4bf",
+    accent: "#5eead4",
+    background: "rgba(13, 148, 136, 0.1)",
+    border: "rgba(13, 148, 136, 0.2)",
+    text: "#2dd4bf",
+    gradient: "linear-gradient(90deg, #14b8a6, #5eead4)",
+    gradientButton: "linear-gradient(135deg, #0d9488, #5eead4)",
+  },
+  sky: {
+    name: "آبی آسمانی",
+    primary: "#0284c7",
+    primaryLight: "#0ea5e9",
+    secondary: "#38bdf8",
+    accent: "#7dd3fc",
+    background: "rgba(2, 132, 199, 0.1)",
+    border: "rgba(2, 132, 199, 0.2)",
+    text: "#38bdf8",
+    gradient: "linear-gradient(90deg, #0ea5e9, #7dd3fc)",
+    gradientButton: "linear-gradient(135deg, #0284c7, #7dd3fc)",
+  },
+  cyan: {
+    name: "آبی مایل به سبز",
+    primary: "#0891b2",
+    primaryLight: "#06b6d4",
+    secondary: "#22d3ee",
+    accent: "#67e8f9",
+    background: "rgba(8, 145, 178, 0.1)",
+    border: "rgba(8, 145, 178, 0.2)",
+    text: "#22d3ee",
+    gradient: "linear-gradient(90deg, #06b6d4, #67e8f9)",
+    gradientButton: "linear-gradient(135deg, #0891b2, #67e8f9)",
+  },
+  indigo: {
+    name: "نیلی",
+    primary: "#4338ca",
+    primaryLight: "#6366f1",
+    secondary: "#818cf8",
+    accent: "#a5b4fc",
+    background: "rgba(67, 56, 202, 0.1)",
+    border: "rgba(67, 56, 202, 0.2)",
+    text: "#818cf8",
+    gradient: "linear-gradient(90deg, #6366f1, #a5b4fc)",
+    gradientButton: "linear-gradient(135deg, #4338ca, #a5b4fc)",
+  },
+  rose: {
+    name: "صورتی گلی",
+    primary: "#e11d48",
+    primaryLight: "#f43f5e",
+    secondary: "#fb7185",
+    accent: "#fda4af",
+    background: "rgba(225, 29, 72, 0.1)",
+    border: "rgba(225, 29, 72, 0.2)",
+    text: "#fb7185",
+    gradient: "linear-gradient(90deg, #f43f5e, #fda4af)",
+    gradientButton: "linear-gradient(135deg, #e11d48, #fda4af)",
+  },
+};
 
 function App() {
   const [bgIndex, setBgIndex] = useState(() => {
@@ -30,6 +154,38 @@ function App() {
 
   // پیام آنت‌دی
   const [messageApi, contextHolder] = message.useMessage();
+
+  // سیستم تم رنگی
+  const [currentTheme, setCurrentTheme] = useState(() => {
+    const saved = localStorage.getItem("appTheme");
+    return saved || "purple";
+  });
+
+  // تابع تغییر تم
+  const changeTheme = (themeName) => {
+    setCurrentTheme(themeName);
+    localStorage.setItem("appTheme", themeName);
+
+    // به‌روزرسانی CSS variables
+    const themeData = colorThemes[themeName];
+    const root = document.documentElement;
+    root.style.setProperty("--theme-primary", themeData.primary);
+    root.style.setProperty("--theme-primary-light", themeData.primaryLight);
+    root.style.setProperty("--theme-secondary", themeData.secondary);
+    root.style.setProperty("--theme-accent", themeData.accent);
+    root.style.setProperty("--theme-background", themeData.background);
+    root.style.setProperty("--theme-border", themeData.border);
+    root.style.setProperty("--theme-text", themeData.text);
+    root.style.setProperty("--theme-gradient", themeData.gradient);
+    root.style.setProperty("--theme-gradient-button", themeData.gradientButton);
+  };
+
+  // اعمال تم در شروع
+  useEffect(() => {
+    changeTheme(currentTheme);
+  }, [currentTheme]);
+
+  const theme = colorThemes[currentTheme];
 
   // ذخیره عکس‌های سفارشی و پیش‌فرض در localStorage
   useEffect(() => {
@@ -191,8 +347,24 @@ function App() {
     >
       <ConfigProvider
         theme={{
-          algorithm: theme.darkAlgorithm,
-          components: {},
+          algorithm: antTheme.darkAlgorithm,
+          token: {
+            colorPrimary: theme.primary,
+          },
+          components: {
+            Modal: {
+              colorPrimary: theme.primary,
+            },
+            Button: {
+              colorPrimary: theme.primary,
+            },
+            Input: {
+              colorPrimary: theme.primary,
+            },
+            Select: {
+              colorPrimary: theme.primary,
+            },
+          },
         }}
       >
         {contextHolder}
@@ -216,8 +388,11 @@ function App() {
                 }}
               >
                 به
-                <span className="text-4xl text-purple-400 font-extrabold my-5 block">
-                  کیفور
+                <span
+                  className="text-4xl font-extrabold my-5 block"
+                  style={{ color: theme.primary }}
+                >
+                  تب‌یار
                 </span>
                 خوش آمدید😍
               </div>
@@ -285,7 +460,7 @@ function App() {
                 </div>
               </div>
             )}
-            <CalendarWidget />
+            <CalendarWidget currentTheme={currentTheme} />
           </div>
         </div>
 
@@ -304,12 +479,11 @@ function App() {
               <div key={img} className="relative group">
                 <button
                   onClick={() => setBgIndex(idx)}
-                  className={`w-5 h-5 rounded-lg border cursor-pointer ${
-                    bgIndex === idx
-                      ? "border-pink-400 ring-1 ring-pink-400"
-                      : "border-transparent"
-                  } overflow-hidden transition`}
+                  className={`w-5 h-5 rounded-lg border cursor-pointer overflow-hidden transition`}
                   style={{
+                    borderColor: bgIndex === idx ? theme.accent : "transparent",
+                    boxShadow:
+                      bgIndex === idx ? `0 0 0 1px ${theme.accent}` : "none",
                     backgroundImage: `url(${img})`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
@@ -328,11 +502,18 @@ function App() {
               </div>
             ))}
             <label
-              className={`w-5 h-5 flex items-center justify-center rounded-lg border border-dashed border-purple-400 cursor-pointer bg-black/40 hover:bg-purple-400/30 transition ${
+              className={`w-5 h-5 flex items-center justify-center rounded-lg border border-dashed cursor-pointer bg-black/40 hover:bg-black/60 transition ${
                 allImages.length >= 15 ? "opacity-50 pointer-events-none" : ""
               }`}
+              style={{
+                borderColor: theme.primary,
+                backgroundColor: "rgba(0,0,0,0.4)",
+              }}
             >
-              <span className="text-purple-400 text-xl font-bold mt-1">
+              <span
+                className="text-xl font-bold mt-1"
+                style={{ color: theme.primary }}
+              >
                 <PlusOutlined style={{ width: "15px", height: "15px" }} />
               </span>
               <input
@@ -361,6 +542,28 @@ function App() {
             >
               <span className="text-amber-400 text-[10px]">Reset</span>
             </button>
+
+            {/* دکمه انتخاب تم */}
+            <div className="relative ml-2">
+              <button
+                className="w-9 h-5 flex items-center justify-center rounded-lg border cursor-pointer bg-black/40 hover:bg-black/60 transition"
+                style={{
+                  borderColor: theme.accent,
+                  backgroundColor: "rgba(0,0,0,0.4)",
+                }}
+                title="تغییر تم رنگی"
+                onClick={() => {
+                  const themeKeys = Object.keys(colorThemes);
+                  const currentIndex = themeKeys.indexOf(currentTheme);
+                  const nextIndex = (currentIndex + 1) % themeKeys.length;
+                  changeTheme(themeKeys[nextIndex]);
+                }}
+              >
+                <span className="text-[10px]" style={{ color: theme.accent }}>
+                  🎨
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       </ConfigProvider>

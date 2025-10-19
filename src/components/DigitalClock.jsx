@@ -70,7 +70,7 @@ function DigitalClock() {
           style={{
             fontSize: 30,
             fontWeight: 200,
-            background: "linear-gradient(90deg,#a78bfa,#f472b6)",
+            background: "var(--theme-gradient)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             backgroundClip: "text",

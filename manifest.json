@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Keyfoor For Custom New Tab",
+  "name": "TabYar For Custom New Tab",
   "version": "1.0",
-  "description": "Keyfoor developed by YashaR",
+  "description": "TabYar developed by YashaR",
   "chrome_url_overrides": {
     "newtab": "index.html"
   },

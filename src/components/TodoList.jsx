@@ -69,14 +69,29 @@ function TodoList() {
       <form onSubmit={addOrUpdateTodo} className="flex mb-4 gap-2">
         <input
           ref={inputRef}
-          className="flex-1 rounded-lg px-3 py-2 bg-black/30 text-white border border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400"
+          className="flex-1 rounded-lg px-3 py-2 bg-black/30 text-white border focus:outline-none focus:ring-2"
+          style={{
+            borderColor: "var(--theme-border)",
+            focusRingColor: "var(--theme-primary)",
+          }}
           placeholder="کار جدید..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          onFocus={(e) => {
+            e.target.style.borderColor = "var(--theme-primary)";
+            e.target.style.boxShadow = `0 0 0 2px var(--theme-background)`;
+          }}
+          onBlur={(e) => {
+            e.target.style.borderColor = "var(--theme-border)";
+            e.target.style.boxShadow = "none";
+          }}
         />
         <button
           type="submit"
-          className="bg-gradient-to-r from-purple-500 to-pink-400 text-white p-2 rounded-full cursor-pointer font-bold shadow hover:scale-105 transition"
+          className="text-white p-2 rounded-full cursor-pointer font-bold shadow hover:scale-105 transition"
+          style={{
+            background: "var(--theme-gradient-button)",
+          }}
         >
           {editId ? (
             "آپدیت"
@@ -103,14 +118,17 @@ function TodoList() {
         {todos.map((todo) => (
           <div
             key={todo.id}
-            className={`flex items-center justify-between px-3 py-2 rounded-lg bg-black/20 border border-purple-300 transition group hover:bg-white/10`}
+            className={`flex items-center justify-between px-3 py-2 rounded-lg bg-black/20 border transition group hover:bg-white/10`}
+            style={{
+              borderColor: "var(--theme-border)",
+            }}
           >
             <ConfigProvider
               theme={{
                 algorithm: theme.darkAlgorithm,
                 components: {
                   Checkbox: {
-                    colorPrimary: "#9810fa",
+                    colorPrimary: "var(--theme-primary)",
                   },
                 },
               }}
@@ -140,7 +158,7 @@ function TodoList() {
                   algorithm: theme.darkAlgorithm,
                   components: {
                     Popconfirm: {
-                      colorPrimary: "#9810fa",
+                      colorPrimary: "var(--theme-primary)",
                     },
                   },
                 }}
