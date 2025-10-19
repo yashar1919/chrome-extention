@@ -20,6 +20,113 @@ body,
   font-family: 'IRANSans', 'Tahoma', 'Arial', sans-serif;
 }
 
+/* CSS برای DND انیمیشن‌های نرم */
+.bookmark-card {
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+  will-change: transform;
+}
+
+.bookmark-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 20px 40px rgba(168, 85, 247, 0.3) !important;
+}
+
+/* انیمیشن‌های DND */
+.sortable-ghost {
+  opacity: 0.4 !important;
+  transform: scale(1.05) !important;
+  transition: all 0.2s ease !important;
+}
+
+.sortable-drag {
+  z-index: 9999 !important;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5) !important;
+  transform: rotate(5deg) scale(1.1) !important;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+/* Cursor styles for DND */
+.cursor-grab {
+  cursor: grab !important;
+}
+
+.cursor-grabbing {
+  cursor: grabbing !important;
+}
+
+.cursor-grab:active {
+  cursor: grabbing !important;
+}
+
+/* استایل‌های خاص برای بوکمارک‌های فولدر */
+.folder-bookmark-container {
+  /* background: rgba(15, 15, 30, 0.8);
+  backdrop-filter: blur(15px); */
+  -webkit-backdrop-filter: blur(15px);
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  /* border: 1px solid rgba(168, 85, 247, 0.2); */
+  padding: 12px;
+  /* margin: 2px 0 0 0; */
+  width: 100%;
+
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(168, 85, 247, 0.3);
+  border-left: 1px solid rgba(168, 85, 247, 0.3);
+  border-right: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.folder-bookmark-card {
+  background: rgba(0, 0, 0, 0.4) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(168, 85, 247, 0.25) !important;
+}
+
+.folder-bookmark-card:hover {
+  background: rgba(0, 0, 0, 0.5) !important;
+  border-color: rgba(168, 85, 247, 0.4) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 12px 30px rgba(168, 85, 247, 0.2) !important;
+}
+
+/* Accordion Animation Styles */
+.accordion-content {
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.3s ease-in-out,
+    padding 0.3s ease-in-out;
+}
+
+.accordion-content.closed {
+  max-height: 0 !important;
+  opacity: 0;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.accordion-content.open {
+  opacity: 1;
+}
+
+.folder-header {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.folder-header:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px rgba(168, 85, 247, 0.15);
+}
+
+.folder-icon-transition {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.folder-icon-transition.open {
+  transform: rotate(90deg);
+}
+
 .bg {
   min-height: 100vh;
   width: 100vw;
@@ -102,21 +209,26 @@ body,
 }
 
 .custom-scrollbar::-webkit-scrollbar {
-  width: 1px; /* خیلی نازک‌تر */
+  width: 1px;
+  /* خیلی نازک‌تر */
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(167, 139, 250, 0.3); /* شفاف‌تر */
+  background: rgba(167, 139, 250, 0.3);
+  /* شفاف‌تر */
   /* border-radius: 2px; */
-  transition: background 0.2s ease; /* انیمیشن نرم */
+  transition: background 0.2s ease;
+  /* انیمیشن نرم */
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(167, 139, 250, 0.6); /* فقط هنگام hover پررنگ‌تر */
+  background: rgba(167, 139, 250, 0.6);
+  /* فقط هنگام hover پررنگ‌تر */
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent; /* کاملاً شفاف */
+  background: transparent;
+  /* کاملاً شفاف */
 }
 
 /* کلاس برای محدود کردن تعداد خطوط متن */

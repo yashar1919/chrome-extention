@@ -154,13 +154,14 @@ function App() {
 
   return (
     <div
-      className="bg min-h-screen w-full grid-container"
+      className="bg w-full grid-container"
       style={{
         backgroundImage: `url(${allImages[bgIndex]})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         transition: "background-image 0.5s",
         display: "grid",
+        position: "relative",
         gridTemplateColumns:
           windowHeight < 700 || window.innerWidth < 768
             ? "280px 1fr 280px"
@@ -170,7 +171,11 @@ function App() {
         gridTemplateRows: windowHeight < 700 ? "1fr auto" : "auto 1fr auto",
         gap: windowHeight < 700 ? "5px" : "10px",
         padding: "10px",
-        minHeight: "100vh",
+        height: windowHeight < 530 ? "auto" : "100vh", // اگر کمتر از 530px: اسکرول کل صفحه
+        minHeight: windowHeight < 530 ? "100vh" : "auto",
+        width: "100%", // عرض کامل
+        overflowY: windowHeight < 530 ? "auto" : "hidden", // فقط وقت نیاز اسکرولبار نمایش بده
+        overflowX: "hidden", // هیچ‌وقت اسکرول افقی نداشته باش
         gridTemplateAreas:
           windowHeight < 700 || window.innerWidth < 768
             ? `
@@ -238,6 +243,9 @@ function App() {
           style={{
             gridArea: "right",
             direction: "rtl",
+            minHeight: "400px", // حداقل ارتفاع
+            maxHeight: windowHeight < 530 ? "510px" : "none", // در اسکرول: حداکثر 510px
+            alignSelf: "start", // همیشه از بالا شروع کن
           }}
         >
           <TodoList />
@@ -260,7 +268,15 @@ function App() {
           >
             {/* ساعت‌ها بالای تقویم - فقط در حالت کوتاه */}
             {isShort && (
-              <div style={{ marginBottom: "15px", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
+              <div
+                style={{
+                  marginBottom: "15px",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: "8px",
+                }}
+              >
                 <div style={{ transform: "scale(1.1)" }}>
                   <AnalogClock />
                 </div>
@@ -273,13 +289,14 @@ function App() {
           </div>
         </div>
 
-        {/* Grid Area 5: بخش پایین وسط - سوییچر پس‌زمینه */}
+        {/* سوییچر پس‌زمینه - مستقل از grid */}
         <div
           className="z-30"
           style={{
-            gridArea: "bottom-center",
-            justifySelf: "center",
-            alignSelf: "end",
+            position: "absolute",
+            left: "50vw",
+            transform: "translateX(-50%)",
+            bottom: "10px",
           }}
         >
           <div className="flex gap-2 bg-black/30 rounded-xl p-2 backdrop-blur-md">
