@@ -10,7 +10,16 @@ import {
   DownOutlined,
   RightOutlined,
 } from "@ant-design/icons";
-import { Modal, Input, Button, message, Popconfirm, Select } from "antd";
+import {
+  Modal,
+  Input,
+  Button,
+  message,
+  Popconfirm,
+  Select,
+  theme,
+  ConfigProvider,
+} from "antd";
 import VanillaTilt from "vanilla-tilt";
 import {
   DndContext,
@@ -37,7 +46,9 @@ const FolderCard = ({ folder, onToggle, onDelete, bookmarksCount }) => {
       {/* هدر فولدر */}
       <div
         /* className="rounded-t-xl p-3 text-white cursor-pointer group hover:border-purple-400/50 transition-all duration-300 flex items-center justify-between w-full folder-header" */
-        className={`${folder.isOpen ? "rounded-t-xl" : "rounded-xl"} p-3 text-white cursor-pointer group hover:border-purple-400/50 transition-all duration-300 flex items-center justify-between w-full folder-header`}
+        className={`${
+          folder.isOpen ? "rounded-t-xl" : "rounded-xl"
+        } p-3 text-white cursor-pointer group hover:border-purple-400/50 transition-all duration-300 flex items-center justify-between w-full folder-header`}
         onClick={() => onToggle(folder.id)}
         style={{
           backgroundColor: "rgba(0, 0, 0, 0.6)", // بک‌گراند تیره‌تر
@@ -69,16 +80,33 @@ const FolderCard = ({ folder, onToggle, onDelete, bookmarksCount }) => {
         </div>
 
         {/* دکمه حذف فولدر */}
-        <Button
-          size="small"
-          type="text"
-          icon={<DeleteOutlined style={{ fontSize: "12px" }} />}
-          className="text-red-400 hover:text-red-300 hover:bg-red-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-          onClick={(e) => {
-            e.stopPropagation();
+        <Popconfirm
+          title="حذف فولدر"
+          description={`آیا از حذف فولدر "${folder.title}" اطمینان دارید؟ تمام بوکمارک‌های داخل آن آزاد خواهند شد.`}
+          onConfirm={(e) => {
+            e?.stopPropagation();
             onDelete(folder.id);
           }}
-        />
+          onCancel={(e) => {
+            e?.stopPropagation();
+          }}
+          okText="بله"
+          cancelText="انصراف"
+          okButtonProps={{
+            style: {
+              backgroundColor: "#dc2626",
+              borderColor: "#dc2626",
+            },
+          }}
+        >
+          <Button
+            size="small"
+            type="text"
+            icon={<DeleteOutlined style={{ fontSize: "12px" }} />}
+            className="text-red-400 hover:text-red-300 hover:bg-red-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </Popconfirm>
       </div>
     </div>
   );
@@ -200,7 +228,7 @@ const SortableBookmarkCard = ({
             e?.stopPropagation();
           }}
           okText="بله"
-          cancelText="خیر"
+          cancelText="انصراف"
           okButtonProps={{
             style: {
               backgroundColor: "#dc2626",
@@ -227,13 +255,10 @@ const BookmarkCards = () => {
     const saved = localStorage.getItem("folders");
     return saved
       ? JSON.parse(saved)
-      : [
-          { id: "social", title: "شبکه‌های اجتماعی", icon: "👥", isOpen: true },
-          { id: "work", title: "کاری", icon: "💼", isOpen: false },
-        ];
+      : [{ id: "general", title: "عمومی", icon: "📁", isOpen: false }];
   });
 
-  const [bookmarks, setBookmarks] = useState(() => {
+  /* const [bookmarks, setBookmarks] = useState(() => {
     const saved = localStorage.getItem("bookmarks");
     return saved
       ? JSON.parse(saved)
@@ -434,6 +459,100 @@ const BookmarkCards = () => {
           { id: 49, title: "اپل", url: "https://apple.com", icon: "🍎" },
           { id: 50, title: "تسلا", url: "https://tesla.com", icon: "⚡" },
         ];
+  }); */
+
+  const [bookmarks, setBookmarks] = useState(() => {
+    const saved = localStorage.getItem("bookmarks");
+    return saved
+      ? JSON.parse(saved)
+      : [
+          // بوکمارک‌های بدون فولدر
+          {
+            id: 1,
+            title: "لینکدین",
+            url: "https://linkedin.com",
+            icon: "👔",
+          },
+          {
+            id: 2,
+            title: "گوگل ترنسلیت",
+            url: "https://translate.google.com",
+            icon: "🌍",
+          },
+          {
+            id: 3,
+            title: "واژه‌یاب",
+            url: "https://vajehyab.com",
+            icon: "🔍",
+          },
+          {
+            id: 4,
+            title: "Grok",
+            url: "https://x.com/i/grok",
+            icon: "🤖",
+          },
+          {
+            id: 5,
+            title: "YouTube",
+            url: "https://youtube.com",
+            icon: "📺",
+          },
+          {
+            id: 6,
+            title: "Gmail",
+            url: "https://gmail.com",
+            icon: "📧",
+          },
+          {
+            id: 7,
+            title: "Classco",
+            url: "https://class-co.ir",
+            icon: "💼",
+          },
+          // بوکمارک‌های فولدر عمومی
+          {
+            id: 8,
+            title: "Google Drive",
+            url: "https://drive.google.com",
+            icon: "☁️",
+            folderId: "general",
+          },
+          {
+            id: 9,
+            title: "Google Meet",
+            url: "https://meet.google.com",
+            icon: "📹",
+            folderId: "general",
+          },
+          {
+            id: 10,
+            title: "جابینجا",
+            url: "https://jobinja.ir",
+            icon: "💼",
+            folderId: "general",
+          },
+          {
+            id: 11,
+            title: "دیجی‌کالا",
+            url: "https://digikala.com",
+            icon: "�",
+            folderId: "general",
+          },
+          {
+            id: 12,
+            title: "DeepSeek",
+            url: "https://chat.deepseek.com",
+            icon: "🧠",
+            folderId: "general",
+          },
+          {
+            id: 13,
+            title: "Unsplash",
+            url: "https://unsplash.com",
+            icon: "📸",
+            folderId: "general",
+          },
+        ];
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -544,10 +663,32 @@ const BookmarkCards = () => {
       isOpen: true,
     };
 
-    setFolders((prev) => [...prev, newFolder]);
-    setShowFolderModal(false);
-    setFolderForm({ title: "", icon: "" });
-    messageApi.success("فولدر جدید ساخته شد");
+    // بررسی محدودیت ذخیره‌سازی براساس حجم مرورگر
+    const testFolders = [...folders, newFolder];
+    const testData = JSON.stringify(testFolders);
+
+    try {
+      // تست localStorage
+      const testKey = `folders_test_${Date.now()}`;
+      localStorage.setItem(testKey, testData);
+      localStorage.removeItem(testKey);
+
+      setFolders((prev) => [...prev, newFolder]);
+      setShowFolderModal(false);
+      setFolderForm({ title: "", icon: "" });
+      messageApi.success("فولدر جدید ساخته شد");
+    } catch (error) {
+      // محاسبه تقریبی حجم
+      const currentSize = JSON.stringify(folders).length;
+      const approximateSize = Math.round(currentSize / 1024);
+
+      console.warn("localStorage full:", error.message);
+
+      messageApi.error(
+        `حجم ذخیره‌سازی مرورگر پر شده است! (تقریباً ${approximateSize}KB استفاده شده)\n` +
+          "لطفاً برخی از فولدرها یا بوکمارک‌ها را حذف کنید."
+      );
+    }
   };
 
   const deleteFolder = (folderId) => {
@@ -604,16 +745,47 @@ const BookmarkCards = () => {
       return;
     }
 
-    // بررسی محدودیت تعداد بوکمارک
-    if (!editingBookmark && bookmarks.length >= 50) {
-      messageApi.error("حداکثر 50 بوکمارک می‌توانید داشته باشید");
-      return;
-    }
-
     // بررسی فرمت URL
     let url = form.url.trim();
     if (!url.startsWith("http://") && !url.startsWith("https://")) {
       url = "https://" + url;
+    }
+
+    // بررسی محدودیت ذخیره‌سازی براساس حجم مرورگر
+    if (!editingBookmark) {
+      const newBookmark = {
+        id: Date.now(),
+        ...form,
+        url,
+        icon: form.icon || "🌐",
+      };
+
+      if (form.folderId) {
+        newBookmark.folderId = form.folderId;
+      }
+
+      // تست ذخیره‌سازی
+      const testBookmarks = [...bookmarks, newBookmark];
+      const testData = JSON.stringify(testBookmarks);
+
+      try {
+        // تست localStorage
+        const testKey = `bookmarks_test_${Date.now()}`;
+        localStorage.setItem(testKey, testData);
+        localStorage.removeItem(testKey);
+      } catch (error) {
+        // محاسبه تقریبی حجم
+        const currentSize = JSON.stringify(bookmarks).length;
+        const approximateSize = Math.round(currentSize / 1024);
+
+        console.warn("localStorage full:", error.message);
+
+        messageApi.error(
+          `حجم ذخیره‌سازی مرورگر پر شده است! (تقریباً ${approximateSize}KB استفاده شده)\n` +
+            "لطفاً برخی از بوکمارک‌های قدیمی را حذف کنید."
+        );
+        return;
+      }
     }
 
     if (editingBookmark) {
@@ -892,21 +1064,24 @@ const BookmarkCards = () => {
             <div className="absolute inset-0 bg-gradient-to-r from-purple-500/30 to-blue-500/30 rounded-2xl blur-lg transform group-hover:scale-110 transition-all duration-300"></div>
 
             {/* کانتینر اصلی */}
-            <div className="relative bg-black/40 backdrop-blur-xl border border-purple-400/30 rounded-2xl px-6 py-4 group-hover:border-purple-400/60 group-hover:bg-black/50 transition-all duration-300">
+            <div className="relative bg-black/40 backdrop-blur-xl border border-purple-400/30 rounded-2xl px-5 py-2 group-hover:border-purple-400/60 group-hover:bg-black/50 transition-all duration-300">
               <div className="flex items-center justify-center gap-3">
                 {/* آیکون */}
-                <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <PlusOutlined className="text-white text-lg" />
+                <div className="w-7 h-7 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <PlusOutlined
+                    className="text-white text-lg"
+                    id="svg-color-plus-icon-antd-for-add-new-folder"
+                  />
                 </div>
 
                 {/* متن */}
                 <div className="text-center">
-                  <span className="text-white font-semibold text-lg group-hover:text-purple-200 transition-colors duration-300">
+                  <span className="text-purple-200 text-[15px] group-hover:text-purple-400 transition-colors duration-300">
                     افزودن فولدر جدید
                   </span>
-                  <p className="text-purple-300/80 text-xs mt-1">
+                  {/* <p className="text-purple-300/80 text-xs mt-1">
                     دسته‌بندی کنید
-                  </p>
+                  </p> */}
                 </div>
               </div>
 
@@ -919,12 +1094,12 @@ const BookmarkCards = () => {
 
       {/* مودال افزودن/ویرایش */}
       <Modal
-        title={editingBookmark ? "ویرایش بوکمارک" : "افزودن بوکمارک جدید"}
+        title={null}
         open={isModalOpen}
-        onOk={handleSave}
-        onCancel={() => setIsModalOpen(false)}
-        okText={editingBookmark ? "ویرایش" : "افزودن"}
-        cancelText="انصراف"
+        onOk={null}
+        onCancel={null}
+        footer={null}
+        closeIcon={null}
         centered
         maskStyle={{
           backgroundColor: "rgba(0, 0, 0, 0.5)", // تیره‌تر
@@ -936,6 +1111,13 @@ const BookmarkCards = () => {
         }}
       >
         <div className="space-y-4" style={{ direction: "rtl" }}>
+          {/* عنوان سفارشی */}
+          <div className="text-center mb-6">
+            <h3 className="text-lg font-bold text-purple-300">
+              {editingBookmark ? "ویرایش بوکمارک" : "افزودن بوکمارک جدید"}
+            </h3>
+          </div>
+
           <div>
             <label className="block text-sm font-medium mb-1">عنوان</label>
             <Input
@@ -1000,57 +1182,129 @@ const BookmarkCards = () => {
               می‌توانید از ایموجی‌ها استفاده کنید
             </small>
           </div>
+
+          {/* دکمه‌های سفارشی */}
+          <div className="flex gap-3 mt-6 pt-4">
+            <Button
+              onClick={() => setIsModalOpen(false)}
+              className="flex-1 h-10 border-2 border-red-500 text-red-600 hover:bg-red-50 hover:border-red-600 hover:text-red-700 font-medium rounded-lg transition-all duration-200 bg-transparent"
+              style={{
+                backgroundColor: "transparent",
+                borderColor: "#ef4444",
+                color: "#dc2626",
+              }}
+            >
+              انصراف
+            </Button>
+            <Button
+              type="primary"
+              onClick={handleSave}
+              className="flex-1 h-10 font-medium rounded-lg transition-all duration-200"
+              style={{
+                backgroundColor: "#9333ea",
+                borderColor: "#9333ea",
+              }}
+            >
+              {editingBookmark ? "ویرایش" : "افزودن"}
+            </Button>
+          </div>
         </div>
       </Modal>
 
       {/* مودال افزودن فولدر */}
-      <Modal
-        title="افزودن فولدر جدید"
-        open={showFolderModal}
-        onOk={createFolder}
-        onCancel={() => setShowFolderModal(false)}
-        okText="افزودن"
-        cancelText="انصراف"
-        centered
-        maskStyle={{
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
-          backdropFilter: "blur(5px)",
-          WebkitBackdropFilter: "blur(5px)",
-        }}
-        styles={{
-          body: { direction: "rtl" },
+      <ConfigProvider
+        theme={{
+          algorithm: theme.darkAlgorithm,
+          components: {
+            Modal: {
+              colorPrimary: "#9810fa",
+            },
+          },
         }}
       >
-        <div className="space-y-4" style={{ direction: "rtl" }}>
-          <div>
-            <label className="block text-sm font-medium mb-1">نام فولدر</label>
-            <Input
-              placeholder="مثال: کاری، شخصی، تفریحی"
-              value={folderForm.title}
-              onChange={(e) =>
-                setFolderForm((prev) => ({ ...prev, title: e.target.value }))
-              }
-            />
-          </div>
+        <Modal
+          title={null}
+          open={showFolderModal}
+          onOk={null}
+          onCancel={null}
+          footer={null}
+          closeIcon={null}
+          centered
+          maskStyle={{
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            backdropFilter: "blur(5px)",
+            WebkitBackdropFilter: "blur(5px)",
+          }}
+          styles={{
+            body: { direction: "rtl" },
+          }}
+        >
+          <div className="space-y-4" style={{ direction: "rtl" }}>
+            {/* عنوان سفارشی */}
+            <div className="text-center mb-6">
+              <h3 className="text-lg font-bold text-purple-300">
+                افزودن فولدر جدید
+              </h3>
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              آیکون فولدر (ایموجی)
-            </label>
-            <Input
-              placeholder="مثال: 📁 یا 💼 یا 🎮"
-              value={folderForm.icon}
-              onChange={(e) =>
-                setFolderForm((prev) => ({ ...prev, icon: e.target.value }))
-              }
-              maxLength={2}
-            />
-            <small className="text-gray-500">
-              می‌توانید از ایموجی‌ها استفاده کنید
-            </small>
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                نام فولدر
+              </label>
+              <Input
+                placeholder="مثال: کاری، شخصی، تفریحی"
+                value={folderForm.title}
+                onChange={(e) =>
+                  setFolderForm((prev) => ({ ...prev, title: e.target.value }))
+                }
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                آیکون فولدر (ایموجی)
+              </label>
+              <Input
+                placeholder="مثال: 📁 یا 💼 یا 🎮"
+                value={folderForm.icon}
+                onChange={(e) =>
+                  setFolderForm((prev) => ({ ...prev, icon: e.target.value }))
+                }
+                maxLength={2}
+              />
+              <small className="text-gray-500">
+                می‌توانید از ایموجی‌ها استفاده کنید
+              </small>
+            </div>
+
+            {/* دکمه‌های سفارشی */}
+            <div className="flex gap-3 mt-6 pt-4">
+              <Button
+                onClick={() => setShowFolderModal(false)}
+                className="flex-1 h-10 border-2 border-red-500 text-red-600 hover:bg-red-50 hover:border-red-600 hover:text-red-700 font-medium rounded-lg transition-all duration-200 bg-transparent"
+                style={{
+                  backgroundColor: "transparent",
+                  borderColor: "#ef4444",
+                  color: "#dc2626",
+                }}
+              >
+                انصراف
+              </Button>
+              <Button
+                type="primary"
+                onClick={createFolder}
+                className="flex-1 h-10 font-medium rounded-lg transition-all duration-200"
+                style={{
+                  backgroundColor: "#9333ea",
+                  borderColor: "#9333ea",
+                }}
+              >
+                افزودن
+              </Button>
+            </div>
           </div>
-        </div>
-      </Modal>
+        </Modal>
+      </ConfigProvider>
     </>
   );
 };

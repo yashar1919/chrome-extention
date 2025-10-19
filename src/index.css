@@ -262,3 +262,7 @@ body,
 .bookmark-card:hover .bookmark-icon {
   transform: scale(1.1);
 }
+
+#svg-color-plus-icon-antd-for-add-new-folder {
+  color: white;
+}
