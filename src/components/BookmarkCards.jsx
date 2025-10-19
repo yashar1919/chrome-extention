@@ -39,6 +39,151 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
+// مجموعه آیکون‌های معروف سایت‌ها
+const siteIcons = {
+  // گوگل سرویس‌ها
+  google: { name: "گوگل", emoji: "🔍", category: "search" },
+  gmail: { name: "جیمیل", emoji: "📧", category: "email" },
+  drive: { name: "گوگل درایو", emoji: "☁️", category: "storage" },
+  meet: { name: "گوگل میت", emoji: "📹", category: "communication" },
+  maps: { name: "گوگل مپس", emoji: "🗺️", category: "travel" },
+  translate: { name: "گوگل ترنسلیت", emoji: "🌍", category: "tools" },
+  youtube: { name: "یوتیوب", emoji: "📺", category: "entertainment" },
+  photos: { name: "گوگل فوتوز", emoji: "📸", category: "storage" },
+  calendar: { name: "گوگل کلندر", emoji: "📅", category: "productivity" },
+  docs: { name: "گوگل داکس", emoji: "📄", category: "productivity" },
+  sheets: { name: "گوگل شیتس", emoji: "📊", category: "productivity" },
+
+  // شبکه‌های اجتماعی
+  linkedin: { name: "لینکدین", emoji: "👔", category: "social" },
+  twitter: { name: "توییتر", emoji: "🐦", category: "social" },
+  facebook: { name: "فیسبوک", emoji: "📘", category: "social" },
+  instagram: { name: "اینستاگرام", emoji: "📷", category: "social" },
+  telegram: { name: "تلگرام", emoji: "✈️", category: "communication" },
+  whatsapp: { name: "واتساپ", emoji: "💬", category: "communication" },
+  discord: { name: "دیسکورد", emoji: "🎮", category: "communication" },
+  reddit: { name: "ردیت", emoji: "🔴", category: "social" },
+  pinterest: { name: "پینترست", emoji: "📌", category: "social" },
+  tiktok: { name: "تیک‌تاک", emoji: "🎵", category: "entertainment" },
+
+  // ابزارهای کاری
+  github: { name: "گیت‌هاب", emoji: "👨‍💻", category: "development" },
+  gitlab: { name: "گیت‌لب", emoji: "🦊", category: "development" },
+  stackoverflow: { name: "استک‌اورفلو", emoji: "💻", category: "development" },
+  slack: { name: "اسلک", emoji: "💼", category: "productivity" },
+  notion: { name: "نوشن", emoji: "📝", category: "productivity" },
+  trello: { name: "ترلو", emoji: "📋", category: "productivity" },
+  asana: { name: "آسانا", emoji: "✅", category: "productivity" },
+  jira: { name: "جیرا", emoji: "🎯", category: "productivity" },
+
+  // طراحی و توسعه
+  figma: { name: "فیگما", emoji: "📐", category: "design" },
+  canva: { name: "کنوا", emoji: "🖌️", category: "design" },
+  adobe: { name: "ادوبی", emoji: "🎨", category: "design" },
+  behance: { name: "بیهنس", emoji: "🎭", category: "design" },
+  dribbble: { name: "دریبل", emoji: "🏀", category: "design" },
+  codepen: { name: "کدپن", emoji: "💻", category: "development" },
+
+  // فروشگاه‌ها
+  amazon: { name: "آمازون", emoji: "📦", category: "shopping" },
+  ebay: { name: "ایبی", emoji: "🏪", category: "shopping" },
+  alibaba: { name: "علی‌بابا", emoji: "🛒", category: "shopping" },
+  digikala: { name: "دیجی‌کالا", emoji: "🛒", category: "shopping" },
+  torob: { name: "ترب", emoji: "🔍", category: "shopping" },
+
+  // سرگرمی
+  netflix: { name: "نتفلیکس", emoji: "🎬", category: "entertainment" },
+  spotify: { name: "اسپاتیفای", emoji: "🎵", category: "entertainment" },
+  twitch: { name: "توییچ", emoji: "🎮", category: "entertainment" },
+  steam: { name: "استیم", emoji: "🎮", category: "entertainment" },
+  aparat: { name: "آپارات", emoji: "📺", category: "entertainment" },
+  namava: { name: "نماوا", emoji: "🎬", category: "entertainment" },
+
+  // ابزارها
+  dropbox: { name: "دراپ‌باکس", emoji: "📁", category: "storage" },
+  onedrive: { name: "وان‌درایو", emoji: "💾", category: "storage" },
+  zoom: { name: "زوم", emoji: "📹", category: "communication" },
+  skype: { name: "اسکایپ", emoji: "☎️", category: "communication" },
+
+  // هوش مصنوعی
+  openai: { name: "اوپن‌ای‌آی", emoji: "🤖", category: "ai" },
+  claude: { name: "کلود", emoji: "🤖", category: "ai" },
+  deepseek: { name: "دیپ‌سیک", emoji: "🧠", category: "ai" },
+  perplexity: { name: "پرپلکسیتی", emoji: "🔍", category: "ai" },
+
+  // سایت‌های فارسی
+  jobinja: { name: "جابینجا", emoji: "💼", category: "job" },
+  snappfood: { name: "اسنپ‌فود", emoji: "🍕", category: "food" },
+  tapsi: { name: "تپسی", emoji: "🚗", category: "transport" },
+  virgool: { name: "ویرگول", emoji: "📖", category: "blog" },
+  vajehyab: { name: "واژه‌یاب", emoji: "📖", category: "tools" },
+
+  // پرداخت
+  paypal: { name: "پی‌پال", emoji: "💰", category: "payment" },
+  stripe: { name: "استرایپ", emoji: "💳", category: "payment" },
+
+  // حمل و نقل
+  uber: { name: "اوبر", emoji: "🚗", category: "transport" },
+  airbnb: { name: "ایربی‌ان‌بی", emoji: "🏠", category: "travel" },
+  booking: { name: "بوکینگ", emoji: "✈️", category: "travel" },
+
+  // آموزش
+  coursera: { name: "کورسرا", emoji: "🎓", category: "education" },
+  udemy: { name: "یودمی", emoji: "🧑‍🏫", category: "education" },
+  khan: { name: "خان آکادمی", emoji: "📚", category: "education" },
+  codecademy: { name: "کدآکادمی", emoji: "💻", category: "education" },
+
+  // عکس و ویدیو
+  unsplash: { name: "آن‌اسپلش", emoji: "📸", category: "media" },
+  pexels: { name: "پکسلز", emoji: "📷", category: "media" },
+  vimeo: { name: "ویمیو", emoji: "🎬", category: "media" },
+
+  // توسعه
+  vercel: { name: "ورسل", emoji: "▲", category: "development" },
+  netlify: { name: "نتلیفای", emoji: "🌐", category: "development" },
+  heroku: { name: "هروکو", emoji: "🚀", category: "development" },
+  firebase: { name: "فایربیس", emoji: "🔥", category: "development" },
+  aws: { name: "آمازون وب سرویس", emoji: "☁️", category: "development" },
+  docker: { name: "داکر", emoji: "🐳", category: "development" },
+
+  // خبر
+  bbc: { name: "بی‌بی‌سی", emoji: "📺", category: "news" },
+  cnn: { name: "سی‌ان‌ان", emoji: "📺", category: "news" },
+  isna: { name: "ایسنا", emoji: "📰", category: "news" },
+  farsnews: { name: "فارس نیوز", emoji: "📰", category: "news" },
+
+  // عمومی
+  wikipedia: { name: "ویکی‌پدیا", emoji: "📜", category: "reference" },
+  medium: { name: "مدیوم", emoji: "📖", category: "blog" },
+};
+
+// دسته‌بندی آیکون‌ها
+const iconCategories = {
+  all: "همه",
+  social: "شبکه‌های اجتماعی",
+  productivity: "بهره‌وری",
+  development: "توسعه",
+  design: "طراحی",
+  entertainment: "سرگرمی",
+  shopping: "خرید",
+  communication: "ارتباطات",
+  storage: "ذخیره‌سازی",
+  education: "آموزش",
+  news: "اخبار",
+  tools: "ابزار",
+  ai: "هوش مصنوعی",
+  job: "شغل",
+  payment: "پرداخت",
+  transport: "حمل و نقل",
+  travel: "سفر",
+  food: "غذا",
+  media: "رسانه",
+  blog: "وبلاگ",
+  reference: "مرجع",
+  search: "جستجو",
+  email: "ایمیل",
+};
+
 // کامپوننت FolderCard
 const FolderCard = ({ folder, onToggle, onDelete, bookmarksCount }) => {
   return (
@@ -567,6 +712,62 @@ const BookmarkCards = () => {
   const [activeFolder, setActiveFolder] = useState("general"); // فولدر فعال
   const [showFolderModal, setShowFolderModal] = useState(false);
   const [folderForm, setFolderForm] = useState({ title: "", icon: "" });
+  const [selectedCategory, setSelectedCategory] = useState("all"); // دسته‌بندی انتخاب شده
+  const [showIconPicker, setShowIconPicker] = useState(false); // نمایش انتخابگر آیکون
+
+  // تابع استخراج آیکون از URL سایت (ساده شده)
+  const getFaviconFromUrl = (url) => {
+    try {
+      const urlObj = new URL(url);
+      const domain = urlObj.hostname.toLowerCase().replace(/^www\./, "");
+
+      // جستجو در آیکون‌های موجود
+      for (const [key, data] of Object.entries(siteIcons)) {
+        if (domain.includes(key) || key.includes(domain.split(".")[0])) {
+          return data.emoji;
+        }
+      }
+
+      // بررسی کلمات کلیدی در domain
+      const domainKeywords = {
+        mail: "📧",
+        email: "📧",
+        chat: "💬",
+        news: "📰",
+        blog: "📖",
+        shop: "🛒",
+        store: "🏪",
+        bank: "🏦",
+        music: "🎵",
+        video: "📺",
+        photo: "📸",
+        game: "🎮",
+        learn: "📚",
+        edu: "🎓",
+        travel: "✈️",
+        hotel: "🏨",
+        food: "🍕",
+        car: "🚗",
+        drive: "☁️",
+        cloud: "☁️",
+        dev: "💻",
+        code: "💻",
+        git: "📝",
+      };
+
+      for (const [keyword, icon] of Object.entries(domainKeywords)) {
+        if (domain.includes(keyword)) return icon;
+      }
+
+      // آیکون براساس TLD
+      if (domain.endsWith(".ir")) return "🇮🇷";
+      if (domain.endsWith(".edu")) return "🎓";
+      if (domain.endsWith(".gov")) return "🏛️";
+      return "🌐";
+    } catch {
+      return "🌐";
+    }
+  };
 
   // فانکشن handle تغییر drag and drop
   const handleDragEnd = (event) => {
@@ -736,6 +937,8 @@ const BookmarkCards = () => {
         folderId: activeFolder || "",
       });
     }
+    setShowIconPicker(false); // بستن انتخابگر آیکون
+    setSelectedCategory("all"); // ریست کردن دسته‌بندی
     setIsModalOpen(true);
   };
 
@@ -751,13 +954,16 @@ const BookmarkCards = () => {
       url = "https://" + url;
     }
 
+    // تعیین آیکون: اگر کاربر آیکون انتخاب نکرده، از سایت استخراج کن
+    const finalIcon = form.icon.trim() || getFaviconFromUrl(url);
+
     // بررسی محدودیت ذخیره‌سازی براساس حجم مرورگر
     if (!editingBookmark) {
       const newBookmark = {
         id: Date.now(),
         ...form,
         url,
-        icon: form.icon || "🌐",
+        icon: finalIcon,
       };
 
       if (form.folderId) {
@@ -793,7 +999,7 @@ const BookmarkCards = () => {
       setBookmarks((prev) =>
         prev.map((bookmark) =>
           bookmark.id === editingBookmark.id
-            ? { ...bookmark, ...form, url }
+            ? { ...bookmark, ...form, url, icon: finalIcon }
             : bookmark
         )
       );
@@ -804,7 +1010,7 @@ const BookmarkCards = () => {
         id: Date.now(),
         ...form,
         url,
-        icon: form.icon || "🌐",
+        icon: finalIcon,
       };
 
       // فقط اگر فولدری انتخاب شده باشه folderId اضافه کن
@@ -816,6 +1022,8 @@ const BookmarkCards = () => {
     }
 
     setIsModalOpen(false);
+    setShowIconPicker(false); // بستن انتخابگر آیکون
+    setSelectedCategory("all"); // ریست کردن دسته‌بندی
     setForm({ title: "", url: "", icon: "", folderId: "" });
   };
 
@@ -831,12 +1039,16 @@ const BookmarkCards = () => {
   const getIconElement = (icon) => {
     if (!icon) return <GlobalOutlined className="text-2xl text-purple-300" />;
 
-    // اگر ایموجی است
-    if (
-      /[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/u.test(
-        icon
-      )
-    ) {
+    // بررسی ایموجی‌ها با regex جامع‌تر
+    const emojiRegex =
+      /[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{1F900}-\u{1F9FF}]|[\u{1FA70}-\u{1FAFF}]|[\u{1F004}]|[\u{1F0CF}]|[\u{1F18E}]|[\u{3030}]|[\u{2B50}]|[\u{2B55}]|[\u{2934}-\u{2935}]|[\u{2B05}-\u{2B07}]|[\u{2B1B}-\u{2B1C}]|[\u{3297}]|[\u{3299}]|[\u{303D}]|[\u{00A9}]|[\u{00AE}]|[\u{2122}]|[\u{23F3}]|[\u{24C2}]|[\u{23F0}]|[\u{25AA}-\u{25AB}]|[\u{25B6}]|[\u{25C0}]|[\u{25FB}-\u{25FE}]|[\u{2620}]|[\u{2622}]|[\u{2623}]|[\u{2626}]|[\u{262A}]|[\u{262E}]|[\u{262F}]|[\u{2638}-\u{263A}]|[\u{2640}]|[\u{2642}]|[\u{2648}-\u{2653}]|[\u{265F}-\u{2660}]|[\u{2663}]|[\u{2665}-\u{2666}]|[\u{2668}]|[\u{267B}]|[\u{267E}-\u{267F}]|[\u{2692}-\u{2697}]|[\u{2699}]|[\u{269B}-\u{269C}]|[\u{26A0}-\u{26A1}]|[\u{26A7}]|[\u{26AA}-\u{26AB}]|[\u{26B0}-\u{26B1}]|[\u{26BD}-\u{26BE}]|[\u{26C4}-\u{26C5}]|[\u{26C8}]|[\u{26CE}]|[\u{26CF}]|[\u{26D1}]|[\u{26D3}-\u{26D4}]|[\u{26E9}-\u{26EA}]|[\u{26F0}-\u{26F5}]|[\u{26F7}-\u{26FA}]|[\u{26FD}]/u;
+
+    if (emojiRegex.test(icon)) {
+      return <span className="text-2xl">{icon}</span>;
+    }
+
+    // اگر تک کاراکتر است (ممکن است ایموجی ساده باشد)
+    if (icon.length <= 2) {
       return <span className="text-2xl">{icon}</span>;
     }
 
@@ -1168,25 +1380,124 @@ const BookmarkCards = () => {
 
           <div>
             <label className="block text-sm font-medium mb-1">
-              آیکون (ایموجی)
+              آیکون (اختیاری)
+              {form.url && !form.icon && (
+                <span className="text-purple-400 text-sm ml-2">
+                  پیشنهادی:{" "}
+                  {getFaviconFromUrl(
+                    form.url.startsWith("http")
+                      ? form.url
+                      : `https://${form.url}`
+                  )}
+                </span>
+              )}
             </label>
-            <Input
-              placeholder="مثال: 🔍 یا 📧 یا 🎵"
-              value={form.icon}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, icon: e.target.value }))
-              }
-              maxLength={2}
-            />
+
+            <div className="space-y-3">
+              {/* فیلد ورودی آیکون */}
+              <div className="flex gap-2 items-center">
+                <Input
+                  placeholder="مثال: 🔍 یا 📧 یا 🎵"
+                  value={form.icon}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, icon: e.target.value }))
+                  }
+                  maxLength={2}
+                  className="flex-1"
+                />
+                {form.url && !form.icon && (
+                  <Button
+                    size="small"
+                    type="dashed"
+                    onClick={() => {
+                      const suggestedIcon = getFaviconFromUrl(
+                        form.url.startsWith("http")
+                          ? form.url
+                          : `https://${form.url}`
+                      );
+                      setForm((prev) => ({ ...prev, icon: suggestedIcon }));
+                    }}
+                    className="text-purple-400 border-purple-400 hover:text-purple-300 hover:border-purple-300"
+                  >
+                    استفاده
+                  </Button>
+                )}
+                <Button
+                  size="small"
+                  type="dashed"
+                  onClick={() => setShowIconPicker(!showIconPicker)}
+                  className="text-blue-400 border-blue-400 hover:text-blue-300 hover:border-blue-300"
+                >
+                  انتخاب
+                </Button>
+              </div>
+
+              {/* انتخابگر آیکون */}
+              {showIconPicker && (
+                <div className="border border-purple-400/30 rounded-lg p-3 bg-black/20 backdrop-blur-sm">
+                  {/* فیلتر دسته‌بندی */}
+                  <div className="mb-3">
+                    <Select
+                      value={selectedCategory}
+                      onChange={setSelectedCategory}
+                      size="small"
+                      style={{ width: "100%" }}
+                      placeholder="انتخاب دسته‌بندی"
+                    >
+                      {Object.entries(iconCategories).map(([key, name]) => (
+                        <Select.Option key={key} value={key}>
+                          {name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </div>
+
+                  {/* گرید آیکون‌ها */}
+                  <div className="grid grid-cols-6 gap-2 max-h-32 overflow-y-auto custom-scrollbar">
+                    {Object.entries(siteIcons)
+                      .filter(
+                        ([, data]) =>
+                          selectedCategory === "all" ||
+                          data.category === selectedCategory
+                      )
+                      .map(([key, data]) => (
+                        <div
+                          key={key}
+                          className="flex flex-col items-center p-2 rounded-lg cursor-pointer hover:bg-purple-400/20 transition-colors duration-200 group"
+                          onClick={() => {
+                            setForm((prev) => ({ ...prev, icon: data.emoji }));
+                            setShowIconPicker(false);
+                          }}
+                          title={data.name}
+                        >
+                          <span className="text-lg group-hover:scale-110 transition-transform duration-200">
+                            {data.emoji}
+                          </span>
+                          <span className="text-xs text-purple-300 mt-1 text-center leading-tight">
+                            {data.name.length > 8
+                              ? data.name.substring(0, 8) + "..."
+                              : data.name}
+                          </span>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
             <small className="text-gray-500">
-              می‌توانید از ایموجی‌ها استفاده کنید
+              اگر خالی بگذارید، آیکون مناسب براساس سایت انتخاب می‌شود
             </small>
           </div>
 
           {/* دکمه‌های سفارشی */}
           <div className="flex gap-3 mt-6 pt-4">
             <Button
-              onClick={() => setIsModalOpen(false)}
+              onClick={() => {
+                setIsModalOpen(false);
+                setShowIconPicker(false);
+                setSelectedCategory("all");
+              }}
               className="flex-1 h-10 border-2 border-red-500 text-red-600 hover:bg-red-50 hover:border-red-600 hover:text-red-700 font-medium rounded-lg transition-all duration-200 bg-transparent"
               style={{
                 backgroundColor: "transparent",
@@ -1262,10 +1573,10 @@ const BookmarkCards = () => {
 
             <div>
               <label className="block text-sm font-medium mb-1">
-                آیکون فولدر (ایموجی)
+                آیکون فولدر (اختیاری)
               </label>
               <Input
-                placeholder="مثال: 📁 یا 💼 یا 🎮"
+                placeholder="مثال: 📁 یا 💼 یا 🎮 (پیش‌فرض: 📁)"
                 value={folderForm.icon}
                 onChange={(e) =>
                   setFolderForm((prev) => ({ ...prev, icon: e.target.value }))
@@ -1273,7 +1584,7 @@ const BookmarkCards = () => {
                 maxLength={2}
               />
               <small className="text-gray-500">
-                می‌توانید از ایموجی‌ها استفاده کنید
+                اگر خالی بگذارید، آیکون 📁 استفاده می‌شود
               </small>
             </div>
 
