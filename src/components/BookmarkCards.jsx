@@ -1145,10 +1145,13 @@ const BookmarkCards = () => {
                     strategy={rectSortingStrategy}
                   >
                     <div
-                      className="grid gap-4 mb-4"
+                      className="grid gap-3 mb-4"
                       style={{
-                        gridTemplateColumns: "repeat(auto-fill, 140px)",
+                        gridTemplateColumns: "repeat(auto-fit, minmax(130px, 140px))",
                         justifyContent: "center",
+                        maxWidth: "90%",
+                        overflow: "hidden",
+                        margin: "0 auto",
                       }}
                     >
                       {/* کارت‌های بوکمارک بدون فولدر */}
@@ -1265,10 +1268,13 @@ const BookmarkCards = () => {
             <div key={folder.id} className="mb-6">
               {/* هدر فولدر - هم‌تراز با grid بوکمارک‌ها */}
               <div
-                className="grid gap-4"
+                className="grid gap-3"
                 style={{
-                  gridTemplateColumns: "repeat(auto-fill, 140px)",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(130px, 140px))",
                   justifyContent: "center",
+                  maxWidth: "90%",
+                  overflow: "hidden",
+                  margin: "0 auto",
                 }}
               >
                 <div className="col-span-full">
@@ -1293,7 +1299,7 @@ const BookmarkCards = () => {
                 }}
               >
                 <div
-                  className="grid gap-4"
+                  className="grid gap-3"
                   style={{
                     gridTemplateColumns: "repeat(auto-fill, 140px)",
                     justifyContent: "center",
