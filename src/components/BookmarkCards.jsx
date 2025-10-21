@@ -1147,7 +1147,8 @@ const BookmarkCards = () => {
                     <div
                       className="grid gap-3 mb-4"
                       style={{
-                        gridTemplateColumns: "repeat(auto-fit, minmax(130px, 140px))",
+                        gridTemplateColumns:
+                          "repeat(auto-fit, minmax(130px, 140px))",
                         justifyContent: "center",
                         maxWidth: "90%",
                         overflow: "hidden",
@@ -1301,8 +1302,12 @@ const BookmarkCards = () => {
                 <div
                   className="grid gap-3"
                   style={{
-                    gridTemplateColumns: "repeat(auto-fill, 140px)",
+                    gridTemplateColumns:
+                      "repeat(auto-fit, minmax(130px, 140px))",
                     justifyContent: "center",
+                    maxWidth: "90%",
+                    overflow: "hidden",
+                    margin: "0 auto",
                   }}
                 >
                   <div className="col-span-full">
