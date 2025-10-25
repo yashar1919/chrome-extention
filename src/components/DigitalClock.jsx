@@ -1,7 +1,19 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, memo, useMemo } from "react";
 import VanillaTilt from "vanilla-tilt";
 
-function DigitalClock() {
+// تنظیمات VanillaTilt را خارج از کامپوننت قرار می‌دهیم
+const TILT_CONFIG = {
+  max: 18,
+  speed: 400,
+  glare: true,
+  "max-glare": 0.25,
+  scale: 1.04,
+};
+
+// Helper function برای leading zero - خارج از کامپوننت
+const pad = (n) => n.toString().padStart(2, "0");
+
+const DigitalClock = memo(function DigitalClock() {
   const [time, setTime] = useState(new Date());
   const clockRef = useRef(null);
 
@@ -12,13 +24,7 @@ function DigitalClock() {
 
   useEffect(() => {
     if (clockRef.current) {
-      VanillaTilt.init(clockRef.current, {
-        max: 18,
-        speed: 400,
-        glare: true,
-        "max-glare": 0.25,
-        scale: 1.04,
-      });
+      VanillaTilt.init(clockRef.current, TILT_CONFIG);
     }
     return () => {
       if (clockRef.current && clockRef.current.vanillaTilt) {
@@ -28,12 +34,15 @@ function DigitalClock() {
     };
   }, []);
 
-  const hours = time.getHours();
-  const minutes = time.getMinutes();
-  const seconds = time.getSeconds();
-
-  // Helper for leading zero
-  const pad = (n) => n.toString().padStart(2, "0");
+  // محاسبه زمان با useMemo
+  const formattedTime = useMemo(
+    () => ({
+      hours: pad(time.getHours()),
+      minutes: pad(time.getMinutes()),
+      seconds: pad(time.getSeconds()),
+    }),
+    [time]
+  );
 
   return (
     <div
@@ -47,7 +56,7 @@ function DigitalClock() {
       <div>
         {/* ساعت */}
         <span style={{ fontSize: 30, fontWeight: 200, color: "#fff" }}>
-          {pad(hours)}
+          {formattedTime.hours}
         </span>
         <span
           className="mx-2"
@@ -57,7 +66,7 @@ function DigitalClock() {
         </span>
         {/* دقیقه */}
         <span style={{ fontSize: 30, fontWeight: 200, color: "#fff" }}>
-          {pad(minutes)}
+          {formattedTime.minutes}
         </span>
         <span
           className="mx-2"
@@ -77,11 +86,11 @@ function DigitalClock() {
             color: "transparent",
           }}
         >
-          {pad(seconds)}
+          {formattedTime.seconds}
         </span>
       </div>
     </div>
   );
-}
+});
 
 export default DigitalClock;

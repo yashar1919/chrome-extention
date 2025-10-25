@@ -33,85 +33,87 @@ body,
   font-family: 'IRANSans', 'Tahoma', 'Arial', sans-serif;
 }
 
-/* CSS برای DND انیمیشن‌های نرم */
+/* CSS برای DND انیمیشن‌های نرم - بهینه‌سازی با transform و will-change */
 .bookmark-card {
-  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    box-shadow 0.2s ease;
   will-change: transform;
 }
 
 .bookmark-card:hover {
-  transform: translateY(-4px) !important;
-  box-shadow: 0 20px 40px var(--theme-background) !important;
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px var(--theme-background);
 }
 
-/* انیمیشن‌های DND */
+/* انیمیشن‌های DND - بهینه‌سازی شده */
 .sortable-ghost {
-  opacity: 0.4 !important;
-  transform: scale(1.05) !important;
-  transition: all 0.2s ease !important;
+  opacity: 0.4;
+  transform: scale(1.05);
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .sortable-drag {
-  z-index: 9999 !important;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5) !important;
-  transform: rotate(5deg) scale(1.1) !important;
-  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+  z-index: 9999;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+  transform: rotate(5deg) scale(1.1);
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 /* Cursor styles for DND */
 .cursor-grab {
-  cursor: grab !important;
+  cursor: grab;
 }
 
 .cursor-grabbing {
-  cursor: grabbing !important;
+  cursor: grabbing;
 }
 
 .cursor-grab:active {
-  cursor: grabbing !important;
+  cursor: grabbing;
 }
 
-/* استایل‌های خاص برای بوکمارک‌های فولدر */
+/* استایل‌های خاص برای بوکمارک‌های فولدر - بہینه‌سازی شده */
 .folder-bookmark-container {
+  backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
+  border-radius: 0 0 12px 12px;
   padding: 12px;
   width: 100%;
   background-color: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--theme-border);
-  border-left: 1px solid var(--theme-border);
-  border-right: 1px solid var(--theme-border);
+  border: 1px solid var(--theme-border);
+  border-top: none;
 }
 
 .folder-bookmark-card {
-  background: rgba(0, 0, 0, 0.4) !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-  border: 1px solid var(--theme-border) !important;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--theme-border);
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .folder-bookmark-card:hover {
-  background: rgba(0, 0, 0, 0.5) !important;
-  border-color: var(--theme-secondary) !important;
-  transform: translateY(-2px) !important;
-  box-shadow: 0 12px 30px var(--theme-background) !important;
+  background: rgba(0, 0, 0, 0.5);
+  border-color: var(--theme-secondary);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px var(--theme-background);
 }
 
-/* Accordion Animation Styles */
+/* Accordion Animation Styles - بهینه‌سازی شده */
 .accordion-content {
   overflow: hidden;
   transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
     opacity 0.3s ease-in-out,
     padding 0.3s ease-in-out;
+  will-change: max-height, opacity;
 }
 
 .accordion-content.closed {
-  max-height: 0 !important;
+  max-height: 0;
   opacity: 0;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .accordion-content.open {
@@ -119,7 +121,9 @@ body,
 }
 
 .folder-header {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.3s ease;
+  will-change: transform;
 }
 
 .folder-header:hover {
@@ -129,6 +133,7 @@ body,
 
 .folder-icon-transition {
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
 }
 
 .folder-icon-transition.open {
@@ -256,15 +261,10 @@ body,
   overflow: hidden;
 }
 
-/* افکت hover برای کارت‌های بوکمارک */
-.bookmark-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px 0 rgba(168, 85, 247, 0.25);
-}
-
-/* انیمیشن برای آیکون‌ها */
+/* انیمیشن برای آیکون‌ها - بهینه‌سازی شده */
 .bookmark-icon {
   transition: transform 0.2s ease-in-out;
+  will-change: transform;
 }
 
 .bookmark-card:hover .bookmark-icon {
@@ -278,6 +278,7 @@ body,
 #background-color-none {
   background-color: transparent !important;
 }
+
 .anticon.anticon-plus svg {
   background-color: transparent !important;
 }

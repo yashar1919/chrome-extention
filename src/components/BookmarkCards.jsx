@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, memo, useCallback } from "react";
 import {
   PlusOutlined,
   EditOutlined,
@@ -186,121 +186,295 @@ const iconCategories = {
   email: "ایمیل",
 };
 
-// کامپوننت FolderCard
-const FolderCard = ({
-  folder,
-  onToggle,
-  onEdit,
-  onDelete,
-  bookmarksCount,
-  onMoveUp,
-  onMoveDown,
-  isFirst,
-  isLast,
-}) => {
-  return (
-    <div className="">
-      {/* هدر فولدر */}
-      <div
-        /* className="rounded-t-xl p-3 text-white cursor-pointer group hover:border-purple-400/50 transition-all duration-300 flex items-center justify-between w-full folder-header" */
-        className={`${
-          folder.isOpen ? "rounded-t-xl" : "rounded-xl"
-        } p-3 text-white cursor-pointer group transition-all duration-300 flex items-center justify-between w-full folder-header`}
-        onClick={() => onToggle(folder.id)}
-        style={{
-          backgroundColor: "rgba(0, 0, 0, 0.6)", // بک‌گراند تیره‌تر
-          backdropFilter: "blur(20px)", // blur بیشتر برای فولدرها
-          border: "1px solid var(--theme-border)",
-        }}
-        onMouseEnter={(e) => {
-          e.target.style.borderColor = "var(--theme-border)";
-        }}
-        onMouseLeave={(e) => {
-          e.target.style.borderColor = "var(--theme-border)";
-        }}
-      >
-        <div className="flex items-center gap-3">
-          {/* آیکون باز/بسته */}
-          <div
-            className={`folder-icon-transition ${folder.isOpen ? "open" : ""}`}
-          >
-            <RightOutlined
-              className="text-sm"
-              style={{ color: "var(--theme-secondary)" }}
-            />
+// کامپوننت FolderCard - بهینه‌سازی با memo
+const FolderCard = memo(
+  ({
+    folder,
+    onToggle,
+    onEdit,
+    onDelete,
+    bookmarksCount,
+    onMoveUp,
+    onMoveDown,
+    isFirst,
+    isLast,
+  }) => {
+    return (
+      <div className="">
+        {/* هدر فولدر */}
+        <div
+          /* className="rounded-t-xl p-3 text-white cursor-pointer group hover:border-purple-400/50 transition-all duration-300 flex items-center justify-between w-full folder-header" */
+          className={`${
+            folder.isOpen ? "rounded-t-xl" : "rounded-xl"
+          } p-3 text-white cursor-pointer group transition-all duration-300 flex items-center justify-between w-full folder-header`}
+          onClick={() => onToggle(folder.id)}
+          style={{
+            backgroundColor: "rgba(0, 0, 0, 0.6)", // بک‌گراند تیره‌تر
+            backdropFilter: "blur(20px)", // blur بیشتر برای فولدرها
+            border: "1px solid var(--theme-border)",
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.borderColor = "var(--theme-border)";
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.borderColor = "var(--theme-border)";
+          }}
+        >
+          <div className="flex items-center gap-3">
+            {/* آیکون باز/بسته */}
+            <div
+              className={`folder-icon-transition ${
+                folder.isOpen ? "open" : ""
+              }`}
+            >
+              <RightOutlined
+                className="text-sm"
+                style={{ color: "var(--theme-secondary)" }}
+              />
+            </div>
+
+            {/* آیکون فولدر */}
+            <span className="text-xl transition-colors duration-300">
+              {folder.isOpen ? <FolderOpenOutlined /> : <FolderOutlined />}
+            </span>
+
+            {/* نام فولدر */}
+            <h3 className="font-bold" style={{ color: "var(--theme-text)" }}>
+              {folder.title}
+            </h3>
+
+            {/* تعداد bookmark ها */}
+            <span
+              className="text-xs px-2 py-1 rounded"
+              style={{
+                color: "var(--theme-secondary)",
+                backgroundColor: "var(--theme-background)",
+              }}
+            >
+              {bookmarksCount}
+            </span>
           </div>
 
-          {/* آیکون فولدر */}
-          <span className="text-xl transition-colors duration-300">
-            {folder.isOpen ? <FolderOpenOutlined /> : <FolderOutlined />}
-          </span>
+          {/* دکمه‌های حرکت، ویرایش و حذف فولدر */}
+          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            {/* دکمه حرکت بالا */}
+            <Button
+              size="small"
+              type="text"
+              icon={<UpOutlined style={{ fontSize: "12px" }} />}
+              className={`${
+                isFirst
+                  ? "text-gray-500 cursor-not-allowed"
+                  : "text-green-400 hover:text-green-300 hover:bg-green-400/20"
+              }`}
+              disabled={isFirst}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!isFirst) {
+                  onMoveUp(folder.id);
+                }
+              }}
+            />
 
-          {/* نام فولدر */}
-          <h3 className="font-bold" style={{ color: "var(--theme-text)" }}>
-            {folder.title}
-          </h3>
+            {/* دکمه حرکت پایین */}
+            <Button
+              size="small"
+              type="text"
+              icon={<DownOutlined style={{ fontSize: "12px" }} />}
+              className={`${
+                isLast
+                  ? "text-gray-500 cursor-not-allowed"
+                  : "text-green-400 hover:text-green-300 hover:bg-green-400/20"
+              }`}
+              disabled={isLast}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!isLast) {
+                  onMoveDown(folder.id);
+                }
+              }}
+            />
 
-          {/* تعداد bookmark ها */}
-          <span
-            className="text-xs px-2 py-1 rounded"
-            style={{
-              color: "var(--theme-secondary)",
-              backgroundColor: "var(--theme-background)",
-            }}
+            {/* دکمه ویرایش */}
+            <Button
+              size="small"
+              type="text"
+              icon={<EditOutlined style={{ fontSize: "12px" }} />}
+              className="text-blue-400 hover:text-blue-300 hover:bg-blue-400/20"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(folder);
+              }}
+            />
+            <ConfigProvider
+              theme={{
+                algorithm: theme.darkAlgorithm,
+                components: {
+                  Popconfirm: {
+                    colorPrimary: "var(--theme-primary)",
+                  },
+                },
+              }}
+            >
+              <Popconfirm
+                title="حذف فولدر"
+                description={`آیا از حذف فولدر "${folder.title}" اطمینان دارید؟ تمام بوکمارک‌های داخل آن آزاد خواهند شد.`}
+                icon={<QuestionCircleOutlined style={{ color: "red" }} />}
+                onConfirm={(e) => {
+                  e?.stopPropagation();
+                  onDelete(folder.id);
+                }}
+                onCancel={(e) => {
+                  e?.stopPropagation();
+                }}
+                okText="حذف"
+                cancelText="لغو"
+              >
+                <Button
+                  size="small"
+                  type="text"
+                  icon={<DeleteOutlined style={{ fontSize: "12px" }} />}
+                  className="text-red-400 hover:text-red-300 hover:bg-red-400/20"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </Popconfirm>
+            </ConfigProvider>
+          </div>
+        </div>
+      </div>
+    );
+  }
+);
+
+// تنظیمات VanillaTilt برای bookmark cards
+const BOOKMARK_TILT_CONFIG = {
+  max: 15,
+  speed: 400,
+  glare: true,
+  "max-glare": 0.2,
+  scale: 1.02,
+};
+
+// کامپوننت SortableBookmarkCard - بهینه‌سازی با memo
+const SortableBookmarkCard = memo(
+  ({
+    bookmark,
+    onEdit,
+    onDelete,
+    onClick,
+    getIconElement,
+    isInFolder = false,
+  }) => {
+    const {
+      attributes,
+      listeners,
+      setNodeRef,
+      transform,
+      transition,
+      isDragging,
+    } = useSortable({
+      id: bookmark.id,
+      disabled: false,
+    });
+
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition:
+        transition || "transform 200ms cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+      opacity: isDragging ? 0.5 : 1,
+      zIndex: isDragging ? 9999 : 1,
+    };
+
+    const cardRef = useRef(null);
+
+    useEffect(() => {
+      if (cardRef.current && !isDragging) {
+        VanillaTilt.init(cardRef.current, BOOKMARK_TILT_CONFIG);
+      }
+
+      return () => {
+        if (cardRef.current && cardRef.current.vanillaTilt) {
+          cardRef.current.vanillaTilt.destroy();
+        }
+      };
+    }, [isDragging]);
+
+    return (
+      <div
+        ref={(el) => {
+          setNodeRef(el);
+          cardRef.current = el;
+        }}
+        className={`glass-black rounded-xl p-1 text-white group transition-all duration-300 relative bookmark-card cursor-pointer ${
+          isInFolder ? "folder-bookmark-card" : ""
+        }`}
+        style={{
+          width: "110px",
+          height: "90px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          textAlign: "center",
+          border: "1px solid var(--theme-border)",
+          ...style,
+        }}
+        {...attributes}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.borderColor = "var(--theme-secondary)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.borderColor = "var(--theme-border)";
+        }}
+      >
+        {/* دکمه Drag Handle - گوشه بالا سمت چپ */}
+        <div
+          {...listeners}
+          className="absolute top-1 left-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-grab active:cursor-grabbing w-6 h-6 flex items-center justify-center rounded"
+          style={{
+            color: "var(--theme-secondary)",
+            backgroundColor: "transparent",
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.color = "var(--theme-text)";
+            e.target.style.backgroundColor = "var(--theme-background)";
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.color = "var(--theme-secondary)";
+            e.target.style.backgroundColor = "transparent";
+          }}
+        >
+          <DragOutlined style={{ fontSize: "12px" }} />
+        </div>
+        {/* محتوای کارت */}
+        <div
+          className="flex flex-col items-center justify-center text-center w-full h-full"
+          onClick={onClick}
+        >
+          {/* آیکون */}
+          <div className="mb-2 bookmark-icon">
+            {getIconElement(bookmark.icon)}
+          </div>
+
+          {/* عنوان */}
+          <h3
+            className="text-sm font-bold mb-1 line-clamp-1"
+            style={{ color: "var(--theme-text)" }}
           >
-            {bookmarksCount}
-          </span>
+            {bookmark.title}
+          </h3>
         </div>
 
-        {/* دکمه‌های حرکت، ویرایش و حذف فولدر */}
-        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          {/* دکمه حرکت بالا */}
-          <Button
-            size="small"
-            type="text"
-            icon={<UpOutlined style={{ fontSize: "12px" }} />}
-            className={`${
-              isFirst
-                ? "text-gray-500 cursor-not-allowed"
-                : "text-green-400 hover:text-green-300 hover:bg-green-400/20"
-            }`}
-            disabled={isFirst}
-            onClick={(e) => {
-              e.stopPropagation();
-              if (!isFirst) {
-                onMoveUp(folder.id);
-              }
-            }}
-          />
-
-          {/* دکمه حرکت پایین */}
-          <Button
-            size="small"
-            type="text"
-            icon={<DownOutlined style={{ fontSize: "12px" }} />}
-            className={`${
-              isLast
-                ? "text-gray-500 cursor-not-allowed"
-                : "text-green-400 hover:text-green-300 hover:bg-green-400/20"
-            }`}
-            disabled={isLast}
-            onClick={(e) => {
-              e.stopPropagation();
-              if (!isLast) {
-                onMoveDown(folder.id);
-              }
-            }}
-          />
-
-          {/* دکمه ویرایش */}
+        {/* دکمه‌های ویرایش و حذف */}
+        <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col pointer-events-auto">
           <Button
             size="small"
             type="text"
             icon={<EditOutlined style={{ fontSize: "12px" }} />}
-            className="text-blue-400 hover:text-blue-300 hover:bg-blue-400/20"
+            className="text-blue-400 hover:text-blue-300 hover:bg-blue-400/20 w-6 h-6 p-0 flex items-center justify-center"
             onClick={(e) => {
               e.stopPropagation();
-              onEdit(folder);
+              onEdit(bookmark);
             }}
           />
           <ConfigProvider
@@ -314,12 +488,12 @@ const FolderCard = ({
             }}
           >
             <Popconfirm
-              title="حذف فولدر"
-              description={`آیا از حذف فولدر "${folder.title}" اطمینان دارید؟ تمام بوکمارک‌های داخل آن آزاد خواهند شد.`}
+              title="حذف بوکمارک"
+              description="آیا از حذف این بوکمارک اطمینان دارید؟"
               icon={<QuestionCircleOutlined style={{ color: "red" }} />}
               onConfirm={(e) => {
                 e?.stopPropagation();
-                onDelete(folder.id);
+                onDelete(bookmark.id);
               }}
               onCancel={(e) => {
                 e?.stopPropagation();
@@ -331,183 +505,18 @@ const FolderCard = ({
                 size="small"
                 type="text"
                 icon={<DeleteOutlined style={{ fontSize: "12px" }} />}
-                className="text-red-400 hover:text-red-300 hover:bg-red-400/20"
+                className="text-red-400 hover:text-red-300 hover:bg-red-400/20 w-6 h-6 p-0 flex items-center justify-center"
                 onClick={(e) => e.stopPropagation()}
               />
             </Popconfirm>
           </ConfigProvider>
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+);
 
-// کامپوننت SortableBookmarkCard
-const SortableBookmarkCard = ({
-  bookmark,
-  onEdit,
-  onDelete,
-  onClick,
-  getIconElement,
-  isInFolder = false,
-}) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
-    id: bookmark.id,
-    disabled: false,
-  });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition:
-      transition || "transform 200ms cubic-bezier(0.175, 0.885, 0.32, 1.275)",
-    opacity: isDragging ? 0.5 : 1,
-    zIndex: isDragging ? 9999 : 1,
-  };
-
-  const cardRef = useRef(null);
-
-  useEffect(() => {
-    if (cardRef.current && !isDragging) {
-      VanillaTilt.init(cardRef.current, {
-        max: 15,
-        speed: 400,
-        glare: true,
-        "max-glare": 0.2,
-        scale: 1.02,
-      });
-    }
-
-    return () => {
-      if (cardRef.current && cardRef.current.vanillaTilt) {
-        cardRef.current.vanillaTilt.destroy();
-      }
-    };
-  }, [isDragging]);
-
-  return (
-    <div
-      ref={(el) => {
-        setNodeRef(el);
-        cardRef.current = el;
-      }}
-      className={`glass-black rounded-xl p-4 text-white group transition-all duration-300 relative bookmark-card cursor-pointer ${
-        isInFolder ? "folder-bookmark-card" : ""
-      }`}
-      style={{
-        width: "140px",
-        height: "100px",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        textAlign: "center",
-        border: "1px solid var(--theme-border)",
-        ...style,
-      }}
-      {...attributes}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = "var(--theme-secondary)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = "var(--theme-border)";
-      }}
-    >
-      {/* دکمه Drag Handle - گوشه بالا سمت چپ */}
-      <div
-        {...listeners}
-        className="absolute top-1 left-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-grab active:cursor-grabbing w-6 h-6 flex items-center justify-center rounded"
-        style={{
-          color: "var(--theme-secondary)",
-          backgroundColor: "transparent",
-        }}
-        onMouseEnter={(e) => {
-          e.target.style.color = "var(--theme-text)";
-          e.target.style.backgroundColor = "var(--theme-background)";
-        }}
-        onMouseLeave={(e) => {
-          e.target.style.color = "var(--theme-secondary)";
-          e.target.style.backgroundColor = "transparent";
-        }}
-      >
-        <DragOutlined style={{ fontSize: "12px" }} />
-      </div>
-      {/* محتوای کارت */}
-      <div
-        className="flex flex-col items-center justify-center text-center w-full h-full"
-        onClick={onClick}
-      >
-        {/* آیکون */}
-        <div className="mb-2 bookmark-icon">
-          {getIconElement(bookmark.icon)}
-        </div>
-
-        {/* عنوان */}
-        <h3
-          className="text-sm font-bold mb-1 line-clamp-1"
-          style={{ color: "var(--theme-text)" }}
-        >
-          {bookmark.title}
-        </h3>
-      </div>
-
-      {/* دکمه‌های ویرایش و حذف */}
-      <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-1 pointer-events-auto">
-        <Button
-          size="small"
-          type="text"
-          icon={<EditOutlined style={{ fontSize: "12px" }} />}
-          className="text-blue-400 hover:text-blue-300 hover:bg-blue-400/20 w-6 h-6 p-0 flex items-center justify-center"
-          onClick={(e) => {
-            e.stopPropagation();
-            onEdit(bookmark);
-          }}
-        />
-        <ConfigProvider
-          theme={{
-            algorithm: theme.darkAlgorithm,
-            components: {
-              Popconfirm: {
-                colorPrimary: "var(--theme-primary)",
-              },
-            },
-          }}
-        >
-          <Popconfirm
-            title="حذف بوکمارک"
-            description="آیا از حذف این بوکمارک اطمینان دارید؟"
-            icon={<QuestionCircleOutlined style={{ color: "red" }} />}
-            onConfirm={(e) => {
-              e?.stopPropagation();
-              onDelete(bookmark.id);
-            }}
-            onCancel={(e) => {
-              e?.stopPropagation();
-            }}
-            okText="حذف"
-            cancelText="لغو"
-          >
-            <Button
-              size="small"
-              type="text"
-              icon={<DeleteOutlined style={{ fontSize: "12px" }} />}
-              className="text-red-400 hover:text-red-300 hover:bg-red-400/20 w-6 h-6 p-0 flex items-center justify-center"
-              onClick={(e) => e.stopPropagation()}
-            />
-          </Popconfirm>
-        </ConfigProvider>
-      </div>
-    </div>
-  );
-};
-
-const BookmarkCards = () => {
+const BookmarkCards = memo(() => {
   // ساختار جدید: folders و bookmarks جداگانه
   const [folders, setFolders] = useState(() => {
     const saved = localStorage.getItem("folders");
@@ -911,15 +920,18 @@ const BookmarkCards = () => {
     messageApi.success("فولدر حذف شد و بوکمارک‌ها آزاد شدند");
   };
 
-  // فیلتر bookmarks بر اساس فولدر
-  const getBookmarksByFolder = (folderId) => {
-    return bookmarks.filter((bookmark) => bookmark.folderId === folderId);
-  };
+  // فیلتر bookmarks بر اساس فولدر - بهینه‌سازی با useCallback
+  const getBookmarksByFolder = useCallback(
+    (folderId) => {
+      return bookmarks.filter((bookmark) => bookmark.folderId === folderId);
+    },
+    [bookmarks]
+  );
 
-  // گرفتن bookmarks بدون فولدر (null یا undefined)
-  const getBookmarksWithoutFolder = () => {
+  // گرفتن bookmarks بدون فولدر (null یا undefined) - بهینه‌سازی با useCallback
+  const getBookmarksWithoutFolder = useCallback(() => {
     return bookmarks.filter((bookmark) => !bookmark.folderId);
-  };
+  }, [bookmarks]);
 
   const handleOpenModal = (
     bookmark = null,
@@ -1042,16 +1054,19 @@ const BookmarkCards = () => {
     setForm({ title: "", url: "", icon: "", folderId: "" });
   };
 
-  const handleDelete = (id) => {
-    setBookmarks((prev) => prev.filter((bookmark) => bookmark.id !== id));
-    messageApi.success("بوکمارک حذف شد");
-  };
+  const handleDelete = useCallback(
+    (id) => {
+      setBookmarks((prev) => prev.filter((bookmark) => bookmark.id !== id));
+      messageApi.success("بوکمارک حذف شد");
+    },
+    [messageApi]
+  );
 
-  const handleCardClick = (url) => {
+  const handleCardClick = useCallback((url) => {
     window.open(url, "_blank");
-  };
+  }, []);
 
-  const getIconElement = (icon) => {
+  const getIconElement = useCallback((icon) => {
     if (!icon)
       return (
         <GlobalOutlined
@@ -1080,7 +1095,7 @@ const BookmarkCards = () => {
         style={{ color: "var(--theme-secondary)" }}
       />
     );
-  };
+  }, []);
 
   return (
     <>
@@ -1112,12 +1127,13 @@ const BookmarkCards = () => {
                       className="grid gap-3 mb-4"
                       style={{
                         gridTemplateColumns:
-                          "repeat(auto-fit, minmax(130px, 140px))",
+                          "repeat(auto-fit, minmax(100px, 110px))",
                         justifyContent: "center",
                         maxWidth: "90%",
                         overflow: "hidden",
                         margin: "0 auto",
                         paddingTop: "5px",
+                        paddingBottom: "5px",
                       }}
                     >
                       {/* کارت‌های بوکمارک بدون فولدر */}
@@ -1136,8 +1152,8 @@ const BookmarkCards = () => {
                       <div
                         className="glass-black rounded-xl p-4 text-white cursor-pointer border-dashed transition-all duration-300 group"
                         style={{
-                          width: "140px",
-                          height: "100px",
+                          width: "110px",
+                          height: "90px",
                           display: "flex",
                           flexDirection: "column",
                           alignItems: "center",
@@ -1187,8 +1203,8 @@ const BookmarkCards = () => {
             <div
               className="glass-black rounded-xl p-4 text-white cursor-pointer border-dashed transition-all duration-300 group"
               style={{
-                width: "140px",
-                height: "100px",
+                width: "110px",
+                height: "90px",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
@@ -1249,7 +1265,7 @@ const BookmarkCards = () => {
               <div
                 className="grid gap-3"
                 style={{
-                  gridTemplateColumns: "repeat(auto-fit, minmax(130px, 140px))",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(100px, 110px))",
                   justifyContent: "center",
                   maxWidth: "90%",
                   overflow: "hidden",
@@ -1286,7 +1302,7 @@ const BookmarkCards = () => {
                   className="grid gap-3"
                   style={{
                     gridTemplateColumns:
-                      "repeat(auto-fit, minmax(130px, 140px))",
+                      "repeat(auto-fit, minmax(100px, 110px))",
                     justifyContent: "center",
                     maxWidth: "90%",
                     overflow: "hidden",
@@ -1305,9 +1321,9 @@ const BookmarkCards = () => {
                       >
                         <div className="folder-bookmark-container">
                           <div
-                            className="grid gap-4"
+                            className="grid gap-3"
                             style={{
-                              gridTemplateColumns: "repeat(auto-fill, 140px)",
+                              gridTemplateColumns: "repeat(auto-fill, 110px)",
                               justifyContent: "center",
                             }}
                           >
@@ -1328,8 +1344,8 @@ const BookmarkCards = () => {
                             <div
                               className="glass-black rounded-xl p-4 text-white cursor-pointer border-dashed transition-all duration-300 group"
                               style={{
-                                width: "140px",
-                                height: "100px",
+                                width: "110px",
+                                height: "90px",
                                 display: "flex",
                                 flexDirection: "column",
                                 alignItems: "center",
@@ -1822,6 +1838,6 @@ const BookmarkCards = () => {
       </ConfigProvider>
     </>
   );
-};
+});
 
 export default BookmarkCards;

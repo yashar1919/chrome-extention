@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, memo, useCallback } from "react";
 import { ConfigProvider, theme, Checkbox, Popconfirm, message } from "antd";
 import {
   DeleteOutlined,
@@ -6,7 +6,26 @@ import {
   QuestionCircleOutlined,
 } from "@ant-design/icons";
 
-function TodoList() {
+// تنظیمات theme را خارج از کامپوننت قرار می‌دهیم
+const DARK_THEME_CONFIG = {
+  algorithm: theme.darkAlgorithm,
+  components: {
+    Checkbox: {
+      colorPrimary: "var(--theme-primary)",
+    },
+  },
+};
+
+const POPCONFIRM_THEME_CONFIG = {
+  algorithm: theme.darkAlgorithm,
+  components: {
+    Popconfirm: {
+      colorPrimary: "var(--theme-primary)",
+    },
+  },
+};
+
+const TodoList = memo(function TodoList() {
   const [todos, setTodos] = useState([]);
   const [input, setInput] = useState("");
   const [editId, setEditId] = useState(null);
@@ -24,57 +43,63 @@ function TodoList() {
     localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos]);
 
-  const addOrUpdateTodo = (e) => {
-    e.preventDefault();
-    if (!input.trim()) return;
-    if (editId) {
-      setTodos((todos) =>
-        todos.map((todo) =>
-          todo.id === editId ? { ...todo, text: input } : todo
-        )
-      );
-      setEditId(null);
-    } else {
-      const newId = Date.now();
-      const newTodo = { text: input, done: false, id: newId };
+  const addOrUpdateTodo = useCallback(
+    (e) => {
+      e.preventDefault();
+      if (!input.trim()) return;
+      if (editId) {
+        setTodos((todos) =>
+          todos.map((todo) =>
+            todo.id === editId ? { ...todo, text: input } : todo
+          )
+        );
+        setEditId(null);
+      } else {
+        const newId = Date.now();
+        const newTodo = { text: input, done: false, id: newId };
 
-      // اضافه کردن todo جدید
-      setTodos([newTodo, ...todos]);
+        // اضافه کردن todo جدید
+        setTodos((prev) => [newTodo, ...prev]);
 
-      // ست کردن انیمیشن برای todo جدید
-      setNewTodoId(newId);
+        // ست کردن انیمیشن برای todo جدید
+        setNewTodoId(newId);
 
-      // حذف انیمیشن بعد از مدت کوتاه
-      setTimeout(() => {
-        setNewTodoId(null);
-      }, 600);
-    }
-    setInput("");
-    inputRef.current?.focus();
-  };
+        // حذف انیمیشن بعد از مدت کوتاه
+        setTimeout(() => {
+          setNewTodoId(null);
+        }, 600);
+      }
+      setInput("");
+      inputRef.current?.focus();
+    },
+    [input, editId]
+  );
 
-  const toggleTodo = (id) => {
+  const toggleTodo = useCallback((id) => {
     setTodos((todos) =>
       todos.map((todo) =>
         todo.id === id ? { ...todo, done: !todo.done } : todo
       )
     );
-  };
+  }, []);
 
-  const removeTodo = (id) => {
-    setTodos((todos) => todos.filter((todo) => todo.id !== id));
-    if (editId === id) {
-      setEditId(null);
-      setInput("");
-    }
-    message.success("آیتم با موفقیت حذف شد.");
-  };
+  const removeTodo = useCallback(
+    (id) => {
+      setTodos((todos) => todos.filter((todo) => todo.id !== id));
+      if (editId === id) {
+        setEditId(null);
+        setInput("");
+      }
+      message.success("آیتم با موفقیت حذف شد.");
+    },
+    [editId]
+  );
 
-  const editTodo = (todo) => {
+  const editTodo = useCallback((todo) => {
     setInput(todo.text);
     setEditId(todo.id);
     inputRef.current?.focus();
-  };
+  }, []);
 
   return (
     <>
@@ -131,16 +156,7 @@ function TodoList() {
                   : {}),
               }}
             >
-              <ConfigProvider
-                theme={{
-                  algorithm: theme.darkAlgorithm,
-                  components: {
-                    Checkbox: {
-                      colorPrimary: "var(--theme-primary)",
-                    },
-                  },
-                }}
-              >
+              <ConfigProvider theme={DARK_THEME_CONFIG}>
                 <Checkbox
                   checked={todo.done}
                   onChange={() => toggleTodo(todo.id)}
@@ -161,16 +177,7 @@ function TodoList() {
                 >
                   <EditOutlined />
                 </button>
-                <ConfigProvider
-                  theme={{
-                    algorithm: theme.darkAlgorithm,
-                    components: {
-                      Popconfirm: {
-                        colorPrimary: "var(--theme-primary)",
-                      },
-                    },
-                  }}
-                >
+                <ConfigProvider theme={POPCONFIRM_THEME_CONFIG}>
                   <Popconfirm
                     title="حذف آیتم"
                     description="آیا مطمئن هستید که می‌خواهید این آیتم را حذف کنید؟"
@@ -236,6 +243,6 @@ function TodoList() {
       </div>
     </>
   );
-}
+});
 
 export default TodoList;

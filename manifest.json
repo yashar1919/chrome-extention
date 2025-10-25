@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "TabYar For Custom New Tab",
+  "name": "TabYar",
   "version": "1.0",
   "description": "TabYar developed by YashaR",
   "chrome_url_overrides": {

@@ -1,16 +1,45 @@
-import React, { useState, useEffect, useRef } from "react";
-import AnalogClock from "./components/AnalogClock";
-import CalendarWidget from "./components/CalendarWidget";
-import DigitalClock from "./components/DigitalClock";
-import TodoList from "./components/TodoList";
-import BookmarkCards from "./components/BookmarkCards";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  memo,
+  useCallback,
+  useMemo,
+  lazy,
+  Suspense,
+} from "react";
 import VanillaTilt from "vanilla-tilt";
 import { ConfigProvider, message, theme as antTheme } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
+import useWindowSize from "./hooks/useWindowSize";
 
+// Lazy loading برای کامپوننت‌های سنگین
+const AnalogClock = lazy(() => import("./components/AnalogClock"));
+const CalendarWidget = lazy(() => import("./components/CalendarWidget"));
+const DigitalClock = lazy(() => import("./components/DigitalClock"));
+const TodoList = lazy(() => import("./components/TodoList"));
+const BookmarkCards = lazy(() => import("./components/BookmarkCards"));
+
+// Loading component سبک
+const ComponentLoader = memo(() => (
+  <div className="flex items-center justify-center h-20 w-20 rounded-xl bg-black/30 backdrop-blur-sm">
+    <div className="animate-pulse text-white">⏳</div>
+  </div>
+));
+
+// تصاویر پیش‌فرض را خارج از کامپوننت تعریف می‌کنیم تا در هر render دوباره ساخته نشود
 const BG_IMAGES = Array.from({ length: 7 }, (_, i) => `/pic${i + 1}.jpg`);
 
-// تم‌های رنگی با رنگ‌های Tailwind
+// تنظیمات VanillaTilt را خارج از کامپوننت قرار می‌دهیم
+const WELCOME_TILT_CONFIG = {
+  max: 18,
+  speed: 400,
+  glare: true,
+  "max-glare": 0.25,
+  scale: 1.04,
+};
+
+// تم‌های رنگی با رنگ‌های Tailwind - خارج از کامپوننت
 const colorThemes = {
   purple: {
     name: "بنفش",
@@ -134,7 +163,7 @@ const colorThemes = {
   },
 };
 
-function App() {
+const App = memo(function App() {
   const [bgIndex, setBgIndex] = useState(() => {
     const saved = localStorage.getItem("bgIndex");
     return saved ? Number(saved) : 0;
@@ -161,8 +190,8 @@ function App() {
     return saved || "purple";
   });
 
-  // تابع تغییر تم
-  const changeTheme = (themeName) => {
+  // تابع تغییر تم - بهینه‌سازی با useCallback
+  const changeTheme = useCallback((themeName) => {
     setCurrentTheme(themeName);
     localStorage.setItem("appTheme", themeName);
 
@@ -178,14 +207,15 @@ function App() {
     root.style.setProperty("--theme-text", themeData.text);
     root.style.setProperty("--theme-gradient", themeData.gradient);
     root.style.setProperty("--theme-gradient-button", themeData.gradientButton);
-  };
+  }, []);
 
   // اعمال تم در شروع
   useEffect(() => {
     changeTheme(currentTheme);
-  }, [currentTheme]);
+  }, [currentTheme, changeTheme]);
 
-  const theme = colorThemes[currentTheme];
+  // محاسبه theme با useMemo
+  const theme = useMemo(() => colorThemes[currentTheme], [currentTheme]);
 
   // ذخیره عکس‌های سفارشی و پیش‌فرض در localStorage
   useEffect(() => {
@@ -270,16 +300,14 @@ function App() {
     }
   };
 
-  // لیست همه عکس‌ها (پیش‌فرض + سفارشی)
-  const allImages = [...defaultImages, ...customImages];
+  // لیست همه عکس‌ها (پیش‌فرض + سفارشی) - بهینه‌سازی با useMemo
+  const allImages = useMemo(
+    () => [...defaultImages, ...customImages],
+    [defaultImages, customImages]
+  );
 
-  // کنترل ارتفاع صفحه
-  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
-  useEffect(() => {
-    const handleResize = () => setWindowHeight(window.innerHeight);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  // استفاده از custom hook برای window size
+  const { height: windowHeight } = useWindowSize();
 
   useEffect(() => {
     localStorage.setItem("bgIndex", bgIndex);
@@ -289,13 +317,7 @@ function App() {
   const welcomeRef = useRef(null);
   useEffect(() => {
     if (welcomeRef.current) {
-      VanillaTilt.init(welcomeRef.current, {
-        max: 18,
-        speed: 400,
-        glare: true,
-        "max-glare": 0.25,
-        scale: 1.04,
-      });
+      VanillaTilt.init(welcomeRef.current, WELCOME_TILT_CONFIG);
     }
     return () => {
       if (welcomeRef.current && welcomeRef.current.vanillaTilt) {
@@ -397,8 +419,12 @@ function App() {
                 خوش آمدید😍
               </div>
               <div className="flex flex-col items-center gap-4">
-                <AnalogClock />
-                <DigitalClock />
+                <Suspense fallback={<ComponentLoader />}>
+                  <AnalogClock />
+                </Suspense>
+                <Suspense fallback={<ComponentLoader />}>
+                  <DigitalClock />
+                </Suspense>
               </div>
             </div>
           </div>
@@ -409,7 +435,9 @@ function App() {
           className="z-10"
           style={{ gridArea: "center", alignSelf: "start" }}
         >
-          <BookmarkCards />
+          <Suspense fallback={<ComponentLoader />}>
+            <BookmarkCards />
+          </Suspense>
         </div>
 
         {/* Grid Area 3: بخش راست - TodoList */}
@@ -423,7 +451,9 @@ function App() {
             alignSelf: "start", // همیشه از بالا شروع کن
           }}
         >
-          <TodoList />
+          <Suspense fallback={<ComponentLoader />}>
+            <TodoList />
+          </Suspense>
         </div>
 
         {/* تقویم و ساعت - سمت چپ */}
@@ -453,14 +483,20 @@ function App() {
                 }}
               >
                 <div style={{ transform: "scale(1.1)" }}>
-                  <AnalogClock />
+                  <Suspense fallback={<ComponentLoader />}>
+                    <AnalogClock />
+                  </Suspense>
                 </div>
                 <div style={{ transform: "scale(1.1)" }}>
-                  <DigitalClock />
+                  <Suspense fallback={<ComponentLoader />}>
+                    <DigitalClock />
+                  </Suspense>
                 </div>
               </div>
             )}
-            <CalendarWidget currentTheme={currentTheme} />
+            <Suspense fallback={<ComponentLoader />}>
+              <CalendarWidget currentTheme={currentTheme} />
+            </Suspense>
           </div>
         </div>
 
@@ -569,6 +605,6 @@ function App() {
       </ConfigProvider>
     </div>
   );
-}
+});
 
 export default App;

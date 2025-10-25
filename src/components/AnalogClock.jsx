@@ -1,7 +1,16 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, memo, useMemo } from "react";
 import VanillaTilt from "vanilla-tilt";
 
-function AnalogClock() {
+// تنظیمات VanillaTilt را خارج از کامپوننت قرار می‌دهیم تا در هر render دوباره ساخته نشود
+const TILT_CONFIG = {
+  max: 18,
+  speed: 400,
+  glare: true,
+  "max-glare": 0.25,
+  scale: 1.04,
+};
+
+const AnalogClock = memo(function AnalogClock() {
   const [time, setTime] = useState(new Date());
   const clockRef = useRef(null);
 
@@ -12,13 +21,7 @@ function AnalogClock() {
 
   useEffect(() => {
     if (clockRef.current) {
-      VanillaTilt.init(clockRef.current, {
-        max: 18,
-        speed: 400,
-        glare: true,
-        "max-glare": 0.25,
-        scale: 1.04,
-      });
+      VanillaTilt.init(clockRef.current, TILT_CONFIG);
     }
     return () => {
       if (clockRef.current && clockRef.current.vanillaTilt) {
@@ -28,12 +31,21 @@ function AnalogClock() {
     };
   }, []);
 
-  const sec = time.getSeconds();
-  const min = time.getMinutes();
-  const hour = time.getHours();
+  // محاسبه کمتری با useMemo
+  const timeValues = useMemo(
+    () => ({
+      sec: time.getSeconds(),
+      min: time.getMinutes(),
+      hour: time.getHours(),
+    }),
+    [time]
+  );
 
-  // اعداد ساعت
-  const numbers = Array.from({ length: 12 }, (_, i) => i + 1);
+  // اعداد ساعت را فقط یک بار محاسبه می‌کنیم
+  const numbers = useMemo(
+    () => Array.from({ length: 12 }, (_, i) => i + 1),
+    []
+  );
 
   return (
     <div
@@ -75,7 +87,7 @@ function AnalogClock() {
             background: "var(--theme-text)",
             boxShadow: "0 0 8px 2px rgba(255,255,255,0.4)",
             transform: `translate(-50%, -100%) rotate(${
-              hour * 30 + min / 2
+              timeValues.hour * 30 + timeValues.min / 2
             }deg)`,
             zIndex: 3,
           }}
@@ -88,7 +100,9 @@ function AnalogClock() {
             height: "60px",
             background: "var(--theme-text)",
             boxShadow: "0 0 8px 2px var(--theme-background)",
-            transform: `translate(-50%, -100%) rotate(${min * 6}deg)`,
+            transform: `translate(-50%, -100%) rotate(${
+              timeValues.min * 6
+            }deg)`,
             zIndex: 2,
           }}
         />
@@ -100,7 +114,9 @@ function AnalogClock() {
             height: "72px",
             background: "var(--theme-gradient)",
             boxShadow: "0 0 8px 2px var(--theme-background)",
-            transform: `translate(-50%, -100%) rotate(${sec * 6}deg)`,
+            transform: `translate(-50%, -100%) rotate(${
+              timeValues.sec * 6
+            }deg)`,
             zIndex: 1,
           }}
         />
@@ -118,6 +134,6 @@ function AnalogClock() {
       </div>
     </div>
   );
-}
+});
 
 export default AnalogClock;
