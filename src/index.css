@@ -278,3 +278,6 @@ body,
 #background-color-none {
   background-color: transparent !important;
 }
+.anticon.anticon-plus svg {
+  background-color: transparent !important;
+}

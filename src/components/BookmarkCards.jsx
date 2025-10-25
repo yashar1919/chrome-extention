@@ -9,6 +9,7 @@ import {
   FolderOpenOutlined,
   DownOutlined,
   RightOutlined,
+  UpOutlined,
   QuestionCircleOutlined,
 } from "@ant-design/icons";
 import {
@@ -186,7 +187,17 @@ const iconCategories = {
 };
 
 // کامپوننت FolderCard
-const FolderCard = ({ folder, onToggle, onDelete, bookmarksCount }) => {
+const FolderCard = ({
+  folder,
+  onToggle,
+  onEdit,
+  onDelete,
+  bookmarksCount,
+  onMoveUp,
+  onMoveDown,
+  isFirst,
+  isLast,
+}) => {
   return (
     <div className="">
       {/* هدر فولدر */}
@@ -241,40 +252,91 @@ const FolderCard = ({ folder, onToggle, onDelete, bookmarksCount }) => {
           </span>
         </div>
 
-        {/* دکمه حذف فولدر */}
-        <ConfigProvider
-          theme={{
-            algorithm: theme.darkAlgorithm,
-            components: {
-              Popconfirm: {
-                colorPrimary: "var(--theme-primary)",
+        {/* دکمه‌های حرکت، ویرایش و حذف فولدر */}
+        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          {/* دکمه حرکت بالا */}
+          <Button
+            size="small"
+            type="text"
+            icon={<UpOutlined style={{ fontSize: "12px" }} />}
+            className={`${
+              isFirst
+                ? "text-gray-500 cursor-not-allowed"
+                : "text-green-400 hover:text-green-300 hover:bg-green-400/20"
+            }`}
+            disabled={isFirst}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!isFirst) {
+                onMoveUp(folder.id);
+              }
+            }}
+          />
+
+          {/* دکمه حرکت پایین */}
+          <Button
+            size="small"
+            type="text"
+            icon={<DownOutlined style={{ fontSize: "12px" }} />}
+            className={`${
+              isLast
+                ? "text-gray-500 cursor-not-allowed"
+                : "text-green-400 hover:text-green-300 hover:bg-green-400/20"
+            }`}
+            disabled={isLast}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!isLast) {
+                onMoveDown(folder.id);
+              }
+            }}
+          />
+
+          {/* دکمه ویرایش */}
+          <Button
+            size="small"
+            type="text"
+            icon={<EditOutlined style={{ fontSize: "12px" }} />}
+            className="text-blue-400 hover:text-blue-300 hover:bg-blue-400/20"
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit(folder);
+            }}
+          />
+          <ConfigProvider
+            theme={{
+              algorithm: theme.darkAlgorithm,
+              components: {
+                Popconfirm: {
+                  colorPrimary: "var(--theme-primary)",
+                },
               },
-            },
-          }}
-        >
-          <Popconfirm
-            title="حذف فولدر"
-            description={`آیا از حذف فولدر "${folder.title}" اطمینان دارید؟ تمام بوکمارک‌های داخل آن آزاد خواهند شد.`}
-            icon={<QuestionCircleOutlined style={{ color: "red" }} />}
-            onConfirm={(e) => {
-              e?.stopPropagation();
-              onDelete(folder.id);
             }}
-            onCancel={(e) => {
-              e?.stopPropagation();
-            }}
-            okText="حذف"
-            cancelText="لغو"
           >
-            <Button
-              size="small"
-              type="text"
-              icon={<DeleteOutlined style={{ fontSize: "12px" }} />}
-              className="text-red-400 hover:text-red-300 hover:bg-red-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-              onClick={(e) => e.stopPropagation()}
-            />
-          </Popconfirm>
-        </ConfigProvider>
+            <Popconfirm
+              title="حذف فولدر"
+              description={`آیا از حذف فولدر "${folder.title}" اطمینان دارید؟ تمام بوکمارک‌های داخل آن آزاد خواهند شد.`}
+              icon={<QuestionCircleOutlined style={{ color: "red" }} />}
+              onConfirm={(e) => {
+                e?.stopPropagation();
+                onDelete(folder.id);
+              }}
+              onCancel={(e) => {
+                e?.stopPropagation();
+              }}
+              okText="حذف"
+              cancelText="لغو"
+            >
+              <Button
+                size="small"
+                type="text"
+                icon={<DeleteOutlined style={{ fontSize: "12px" }} />}
+                className="text-red-400 hover:text-red-300 hover:bg-red-400/20"
+                onClick={(e) => e.stopPropagation()}
+              />
+            </Popconfirm>
+          </ConfigProvider>
+        </div>
       </div>
     </div>
   );
@@ -454,209 +516,6 @@ const BookmarkCards = () => {
       : [{ id: "general", title: "عمومی", icon: "📁", isOpen: false }];
   });
 
-  /* const [bookmarks, setBookmarks] = useState(() => {
-    const saved = localStorage.getItem("bookmarks");
-    return saved
-      ? JSON.parse(saved)
-      : [
-          {
-            id: 1,
-            title: "گوگل",
-            url: "https://google.com",
-            icon: "🔍",
-            // بدون folderId - بوکمارک آزاد
-          },
-          {
-            id: 2,
-            title: "GitHub",
-            url: "https://github.com",
-            icon: "👨‍💻",
-            // بدون folderId - بوکمارک آزاد
-          },
-          {
-            id: 51,
-            title: "استک‌اورفلو",
-            url: "https://stackoverflow.com",
-            icon: "💻",
-            folderId: "work",
-          },
-          {
-            id: 3,
-            title: "یوتیوب",
-            url: "https://youtube.com",
-            icon: "📺",
-            folderId: "social",
-          },
-          {
-            id: 4,
-            title: "فیسبوک",
-            url: "https://facebook.com",
-            icon: "📘",
-            folderId: "social",
-          },
-          {
-            id: 5,
-            title: "توییتر",
-            url: "https://twitter.com",
-            icon: "🐦",
-            folderId: "social",
-          },
-          {
-            id: 6,
-            title: "اینستاگرام",
-            url: "https://instagram.com",
-            icon: "📷",
-            folderId: "social",
-          },
-          {
-            id: 7,
-            title: "لینکدین",
-            url: "https://linkedin.com",
-            icon: "💼",
-            folderId: "work",
-          },
-          {
-            id: 8,
-            title: "ردیت",
-            url: "https://reddit.com",
-            icon: "🔴",
-            folderId: "social",
-          },
-          {
-            id: 9,
-            title: "اسپاتیفای",
-            url: "https://spotify.com",
-            icon: "🎵",
-            // بدون فولدر
-          },
-          {
-            id: 10,
-            title: "نتفلیکس",
-            url: "https://netflix.com",
-            icon: "🎬",
-            // بدون فولدر
-          },
-          {
-            id: 11,
-            title: "آمازون",
-            url: "https://amazon.com",
-            icon: "📦",
-            // بدون فولدر
-          },
-          {
-            id: 12,
-            title: "علی‌بابا",
-            url: "https://alibaba.com",
-            icon: "🛒",
-            // بدون فولدر
-          },
-          {
-            id: 13,
-            title: "ایبی",
-            url: "https://ebay.com",
-            icon: "🏪",
-            folderId: "general",
-          },
-          { id: 14, title: "پی‌پال", url: "https://paypal.com", icon: "💰" },
-          { id: 15, title: "اوبر", url: "https://uber.com", icon: "🚗" },
-          { id: 16, title: "ایرباناب", url: "https://airbnb.com", icon: "🏠" },
-          { id: 17, title: "بوکینگ", url: "https://booking.com", icon: "✈️" },
-          {
-            id: 18,
-            title: "تریپ ادوایزر",
-            url: "https://tripadvisor.com",
-            icon: "🌍",
-          },
-          { id: 19, title: "زوم", url: "https://zoom.us", icon: "�" },
-          { id: 20, title: "اسکایپ", url: "https://skype.com", icon: "☎️" },
-          { id: 21, title: "تلگرام", url: "https://telegram.org", icon: "✈️" },
-          { id: 22, title: "واتساپ", url: "https://whatsapp.com", icon: "💬" },
-          { id: 23, title: "دیسکورد", url: "https://discord.com", icon: "🎮" },
-          { id: 24, title: "اسلک", url: "https://slack.com", icon: "📊" },
-          { id: 25, title: "ترلو", url: "https://trello.com", icon: "📋" },
-          { id: 26, title: "نوشن", url: "https://notion.so", icon: "📝" },
-          { id: 27, title: "ایورنوت", url: "https://evernote.com", icon: "🗒️" },
-          {
-            id: 28,
-            title: "گوگل درایو",
-            url: "https://drive.google.com",
-            icon: "☁️",
-          },
-          {
-            id: 29,
-            title: "دراپ‌باکس",
-            url: "https://dropbox.com",
-            icon: "📁",
-          },
-          {
-            id: 30,
-            title: "وان‌درایو",
-            url: "https://onedrive.com",
-            icon: "💾",
-          },
-          { id: 31, title: "ادوبی", url: "https://adobe.com", icon: "🎨" },
-          { id: 32, title: "کنوا", url: "https://canva.com", icon: "🖌️" },
-          { id: 33, title: "فیگما", url: "https://figma.com", icon: "📐" },
-          { id: 34, title: "بیهنس", url: "https://behance.net", icon: "🎭" },
-          { id: 35, title: "دریبل", url: "https://dribbble.com", icon: "🏀" },
-          { id: 36, title: "میدیوم", url: "https://medium.com", icon: "📖" },
-          { id: 37, title: "کورسرا", url: "https://coursera.org", icon: "🎓" },
-          {
-            id: 38,
-            title: "خان آکادمی",
-            url: "https://khanacademy.org",
-            icon: "📚",
-          },
-          { id: 39, title: "یودمی", url: "https://udemy.com", icon: "🧑‍🏫" },
-          {
-            id: 40,
-            title: "ویکی‌پدیا",
-            url: "https://wikipedia.org",
-            icon: "📜",
-          },
-          {
-            id: 41,
-            title: "استک اورفلو",
-            url: "https://stackoverflow.com",
-            icon: "�",
-          },
-          {
-            id: 42,
-            title: "ورد پرس",
-            url: "https://wordpress.com",
-            icon: "🌐",
-          },
-          { id: 43, title: "شاپیفای", url: "https://shopify.com", icon: "🛍️" },
-          {
-            id: 44,
-            title: "میل‌چیمپ",
-            url: "https://mailchimp.com",
-            icon: "📧",
-          },
-          {
-            id: 45,
-            title: "هاب‌اسپات",
-            url: "https://hubspot.com",
-            icon: "📈",
-          },
-          {
-            id: 46,
-            title: "سیلزفورس",
-            url: "https://salesforce.com",
-            icon: "💼",
-          },
-          { id: 47, title: "آساناه", url: "https://asana.com", icon: "✅" },
-          {
-            id: 48,
-            title: "مایکروسافت",
-            url: "https://microsoft.com",
-            icon: "🪟",
-          },
-          { id: 49, title: "اپل", url: "https://apple.com", icon: "🍎" },
-          { id: 50, title: "تسلا", url: "https://tesla.com", icon: "⚡" },
-        ];
-  }); */
-
   const [bookmarks, setBookmarks] = useState(() => {
     const saved = localStorage.getItem("bookmarks");
     return saved
@@ -752,6 +611,7 @@ const BookmarkCards = () => {
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalInsideFolder, setIsModalInsideFolder] = useState(false);
   const [editingBookmark, setEditingBookmark] = useState(null);
   const [form, setForm] = useState({
     title: "",
@@ -763,8 +623,10 @@ const BookmarkCards = () => {
   const [activeFolder, setActiveFolder] = useState("general"); // فولدر فعال
   const [showFolderModal, setShowFolderModal] = useState(false);
   const [folderForm, setFolderForm] = useState({ title: "", icon: "" });
+  const [editingFolder, setEditingFolder] = useState(null); // فولدر در حال ادیت
   const [selectedCategory, setSelectedCategory] = useState("all"); // دسته‌بندی انتخاب شده
   const [showIconPicker, setShowIconPicker] = useState(false); // نمایش انتخابگر آیکون
+  const [animatingFolders, setAnimatingFolders] = useState(new Set()); // فولدرهای در حال انیمیشن
 
   // تابع استخراج آیکون از URL سایت (ساده شده)
   const getFaviconFromUrl = (url) => {
@@ -902,44 +764,133 @@ const BookmarkCards = () => {
     );
   };
 
+  // تابع حرکت فولدر بالا
+  const moveFolderUp = (folderId) => {
+    const currentIndex = folders.findIndex((f) => f.id === folderId);
+    if (currentIndex <= 0) return; // اگر اولین فولدر باشه، تغییری نده
+
+    const previousFolderId = folders[currentIndex - 1].id;
+
+    // شروع انیمیشن
+    setAnimatingFolders(new Set([folderId, previousFolderId]));
+
+    // اجرای تغییر ترتیب با تاخیر کوتاه
+    setTimeout(() => {
+      setFolders((prev) => {
+        const newFolders = [...prev];
+        [newFolders[currentIndex - 1], newFolders[currentIndex]] = [
+          newFolders[currentIndex],
+          newFolders[currentIndex - 1],
+        ];
+        return newFolders;
+      });
+
+      // پایان انیمیشن
+      setTimeout(() => {
+        setAnimatingFolders(new Set());
+      }, 100);
+    }, 150);
+
+    messageApi.success("ترتیب فولدر تغییر کرد");
+  };
+
+  // تابع حرکت فولدر پایین
+  const moveFolderDown = (folderId) => {
+    const currentIndex = folders.findIndex((f) => f.id === folderId);
+    if (currentIndex >= folders.length - 1) return; // اگر آخرین فولدر باشه، تغییری نده
+
+    const nextFolderId = folders[currentIndex + 1].id;
+
+    // شروع انیمیشن
+    setAnimatingFolders(new Set([folderId, nextFolderId]));
+
+    // اجرای تغییر ترتیب با تاخیر کوتاه
+    setTimeout(() => {
+      setFolders((prev) => {
+        const newFolders = [...prev];
+        [newFolders[currentIndex], newFolders[currentIndex + 1]] = [
+          newFolders[currentIndex + 1],
+          newFolders[currentIndex],
+        ];
+        return newFolders;
+      });
+
+      // پایان انیمیشن
+      setTimeout(() => {
+        setAnimatingFolders(new Set());
+      }, 100);
+    }, 150);
+
+    messageApi.success("ترتیب فولدر تغییر کرد");
+  };
+
+  const handleEditFolder = (folder) => {
+    setEditingFolder(folder);
+    setFolderForm({
+      title: folder.title,
+      icon: folder.icon,
+    });
+    setShowFolderModal(true);
+  };
+
   const createFolder = () => {
     if (!folderForm.title.trim()) {
       messageApi.error("لطفاً نام فولدر را وارد کنید");
       return;
     }
 
-    const newFolder = {
-      id: `folder_${Date.now()}`,
-      title: folderForm.title.trim(),
-      icon: folderForm.icon || "📁",
-      isOpen: true,
-    };
-
-    // بررسی محدودیت ذخیره‌سازی براساس حجم مرورگر
-    const testFolders = [...folders, newFolder];
-    const testData = JSON.stringify(testFolders);
-
-    try {
-      // تست localStorage
-      const testKey = `folders_test_${Date.now()}`;
-      localStorage.setItem(testKey, testData);
-      localStorage.removeItem(testKey);
-
-      setFolders((prev) => [...prev, newFolder]);
-      setShowFolderModal(false);
-      setFolderForm({ title: "", icon: "" });
-      messageApi.success("فولدر جدید ساخته شد");
-    } catch (error) {
-      // محاسبه تقریبی حجم
-      const currentSize = JSON.stringify(folders).length;
-      const approximateSize = Math.round(currentSize / 1024);
-
-      console.warn("localStorage full:", error.message);
-
-      messageApi.error(
-        `حجم ذخیره‌سازی مرورگر پر شده است! (تقریباً ${approximateSize}KB استفاده شده)\n` +
-          "لطفاً برخی از فولدرها یا بوکمارک‌ها را حذف کنید."
+    if (editingFolder) {
+      // ویرایش فولدر موجود
+      setFolders((prev) =>
+        prev.map((folder) =>
+          folder.id === editingFolder.id
+            ? {
+                ...folder,
+                title: folderForm.title.trim(),
+                icon: folderForm.icon || "📁",
+              }
+            : folder
+        )
       );
+      setShowFolderModal(false);
+      setEditingFolder(null);
+      setFolderForm({ title: "", icon: "" });
+      messageApi.success("فولدر با موفقیت ویرایش شد");
+    } else {
+      // ساخت فولدر جدید
+      const newFolder = {
+        id: `folder_${Date.now()}`,
+        title: folderForm.title.trim(),
+        icon: folderForm.icon || "📁",
+        isOpen: true,
+      };
+
+      // بررسی محدودیت ذخیره‌سازی براساس حجم مرورگر
+      const testFolders = [...folders, newFolder];
+      const testData = JSON.stringify(testFolders);
+
+      try {
+        // تست localStorage
+        const testKey = `folders_test_${Date.now()}`;
+        localStorage.setItem(testKey, testData);
+        localStorage.removeItem(testKey);
+
+        setFolders((prev) => [...prev, newFolder]);
+        setShowFolderModal(false);
+        setFolderForm({ title: "", icon: "" });
+        messageApi.success("فولدر جدید ساخته شد");
+      } catch (error) {
+        // محاسبه تقریبی حجم
+        const currentSize = JSON.stringify(folders).length;
+        const approximateSize = Math.round(currentSize / 1024);
+
+        console.warn("localStorage full:", error.message);
+
+        messageApi.error(
+          `حجم ذخیره‌سازی مرورگر پر شده است! (تقریباً ${approximateSize}KB استفاده شده)\n` +
+            "لطفاً برخی از فولدرها یا بوکمارک‌ها را حذف کنید."
+        );
+      }
     }
   };
 
@@ -970,7 +921,11 @@ const BookmarkCards = () => {
     return bookmarks.filter((bookmark) => !bookmark.folderId);
   };
 
-  const handleOpenModal = (bookmark = null) => {
+  const handleOpenModal = (
+    bookmark = null,
+    isInsideFolder = false,
+    specificFolderId = null
+  ) => {
     if (bookmark) {
       setEditingBookmark(bookmark);
       setForm({
@@ -979,14 +934,22 @@ const BookmarkCards = () => {
         icon: bookmark.icon,
         folderId: bookmark.folderId || "",
       });
+      setIsModalInsideFolder(false); // برای ادیت، همیشه فولدر نشون بده
     } else {
       setEditingBookmark(null);
+      const targetFolderId = specificFolderId || activeFolder || "";
       setForm({
         title: "",
         url: "",
         icon: "",
-        folderId: activeFolder || "",
+        folderId: targetFolderId,
       });
+      setIsModalInsideFolder(isInsideFolder); // تنظیم حالت مودال
+
+      // اگر از داخل فولدر خاص فراخوانی شده، activeFolder رو هم آپدیت کن
+      if (specificFolderId) {
+        setActiveFolder(specificFolderId);
+      }
     }
     setShowIconPicker(false); // بستن انتخابگر آیکون
     setSelectedCategory("all"); // ریست کردن دسته‌بندی
@@ -1073,6 +1036,7 @@ const BookmarkCards = () => {
     }
 
     setIsModalOpen(false);
+    setIsModalInsideFolder(false); // ریست کردن حالت مودال
     setShowIconPicker(false); // بستن انتخابگر آیکون
     setSelectedCategory("all"); // ریست کردن دسته‌بندی
     setForm({ title: "", url: "", icon: "", folderId: "" });
@@ -1153,7 +1117,7 @@ const BookmarkCards = () => {
                         maxWidth: "90%",
                         overflow: "hidden",
                         margin: "0 auto",
-                        paddingTop: "5px"
+                        paddingTop: "5px",
                       }}
                     >
                       {/* کارت‌های بوکمارک بدون فولدر */}
@@ -1193,7 +1157,7 @@ const BookmarkCards = () => {
                         }}
                         onClick={() => {
                           setActiveFolder(null); // بدون فولدر
-                          handleOpenModal();
+                          handleOpenModal(null, false); // false = خارج از فولدر
                         }}
                       >
                         <PlusOutlined
@@ -1244,7 +1208,7 @@ const BookmarkCards = () => {
               }}
               onClick={() => {
                 setActiveFolder(null); // بدون فولدر
-                handleOpenModal();
+                handleOpenModal(null, false); // false = خارج از فولدر
               }}
             >
               <PlusOutlined
@@ -1263,11 +1227,24 @@ const BookmarkCards = () => {
         )}
 
         {/* نمایش فولدرها */}
-        {folders.map((folder) => {
+        {folders.map((folder, index) => {
           const folderBookmarks = getBookmarksByFolder(folder.id);
 
           return (
-            <div key={folder.id} className="mb-6">
+            <div
+              key={folder.id}
+              className={`mb-6 folder-container ${
+                animatingFolders.has(folder.id) ? "folder-animating" : ""
+              }`}
+              style={{
+                transition:
+                  "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease",
+                transform: animatingFolders.has(folder.id)
+                  ? "scale(1.02)"
+                  : "scale(1)",
+                opacity: animatingFolders.has(folder.id) ? "0.8" : "1",
+              }}
+            >
               {/* هدر فولدر - هم‌تراز با grid بوکمارک‌ها */}
               <div
                 className="grid gap-3"
@@ -1283,7 +1260,12 @@ const BookmarkCards = () => {
                   <FolderCard
                     folder={folder}
                     onToggle={toggleFolder}
+                    onEdit={handleEditFolder}
                     onDelete={deleteFolder}
+                    onMoveUp={moveFolderUp}
+                    onMoveDown={moveFolderDown}
+                    isFirst={index === 0}
+                    isLast={index === folders.length - 1}
                     bookmarksCount={folderBookmarks.length}
                   />
                 </div>
@@ -1369,8 +1351,7 @@ const BookmarkCards = () => {
                                   "rgba(0,0,0,0.3)";
                               }}
                               onClick={() => {
-                                setActiveFolder(folder.id);
-                                handleOpenModal();
+                                handleOpenModal(null, true, folder.id); // true = داخل فولدر، folder.id = فولدر هدف
                               }}
                             >
                               <PlusOutlined
@@ -1400,7 +1381,11 @@ const BookmarkCards = () => {
         <div className="mt-6 flex justify-center">
           <div
             className="relative cursor-pointer group"
-            onClick={() => setShowFolderModal(true)}
+            onClick={() => {
+              setEditingFolder(null);
+              setFolderForm({ title: "", icon: "" });
+              setShowFolderModal(true);
+            }}
           >
             {/* پس‌زمینه blur */}
             {/* <div className="absolute inset-0 bg-gradient-to-r from-purple-500/30 to-blue-500/30 rounded-2xl blur-lg transform group-hover:scale-110 transition-all duration-300"></div> */}
@@ -1515,29 +1500,54 @@ const BookmarkCards = () => {
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">فولدر</label>
-            <Select
-              value={form.folderId}
-              onChange={(value) =>
-                setForm((prev) => ({ ...prev, folderId: value }))
-              }
-              placeholder="انتخاب فولدر"
-              style={{ width: "100%" }}
-              allowClear
-            >
-              <Select.Option key="no-folder" value="">
-                <span style={{ marginLeft: "8px" }}>📌</span>
-                بدون فولدر
-              </Select.Option>
-              {folders.map((folder) => (
-                <Select.Option key={folder.id} value={folder.id}>
-                  <span style={{ marginLeft: "8px" }}>{folder.icon}</span>
-                  {folder.title}
+          {/* بخش انتخاب فولدر - فقط وقتی از خارج فولدر اضافه می‌کنیم */}
+          {!isModalInsideFolder && (
+            <div>
+              <label className="block text-sm font-medium mb-1">فولدر</label>
+              <Select
+                value={form.folderId}
+                onChange={(value) =>
+                  setForm((prev) => ({ ...prev, folderId: value }))
+                }
+                placeholder="انتخاب فولدر"
+                style={{ width: "100%" }}
+                allowClear
+              >
+                <Select.Option key="no-folder" value="">
+                  <span style={{ marginLeft: "8px" }}>📌</span>
+                  بدون فولدر
                 </Select.Option>
-              ))}
-            </Select>
-          </div>
+                {folders.map((folder) => (
+                  <Select.Option key={folder.id} value={folder.id}>
+                    <span style={{ marginLeft: "8px" }}>{folder.icon}</span>
+                    {folder.title}
+                  </Select.Option>
+                ))}
+              </Select>
+            </div>
+          )}
+
+          {/* نمایش فولدر انتخاب شده وقتی از داخل فولدر اضافه می‌کنیم */}
+          {isModalInsideFolder && activeFolder && (
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                فولدر انتخاب شده
+              </label>
+              <div
+                className="p-2 rounded border"
+                style={{
+                  backgroundColor: "var(--theme-background)",
+                  borderColor: "var(--theme-border)",
+                  color: "var(--theme-text)",
+                }}
+              >
+                <span style={{ marginLeft: "8px" }}>
+                  {folders.find((f) => f.id === activeFolder)?.icon || "📁"}
+                </span>
+                {folders.find((f) => f.id === activeFolder)?.title || "فولدر"}
+              </div>
+            </div>
+          )}
 
           <div>
             <label className="block text-sm font-medium mb-1">
@@ -1681,6 +1691,7 @@ const BookmarkCards = () => {
             <Button
               onClick={() => {
                 setIsModalOpen(false);
+                setIsModalInsideFolder(false); // ریست کردن حالت مودال
                 setShowIconPicker(false);
                 setSelectedCategory("all");
               }}
@@ -1743,7 +1754,7 @@ const BookmarkCards = () => {
                 className="text-lg font-bold"
                 style={{ color: "var(--theme-secondary)" }}
               >
-                افزودن فولدر جدید
+                {editingFolder ? "ویرایش فولدر" : "افزودن فولدر جدید"}
               </h3>
             </div>
 
@@ -1780,7 +1791,11 @@ const BookmarkCards = () => {
             {/* دکمه‌های سفارشی */}
             <div className="flex gap-3 mt-6 pt-4">
               <Button
-                onClick={() => setShowFolderModal(false)}
+                onClick={() => {
+                  setShowFolderModal(false);
+                  setEditingFolder(null);
+                  setFolderForm({ title: "", icon: "" });
+                }}
                 className="flex-1 h-10 border-2 border-red-500 text-red-600 hover:bg-red-50 hover:border-red-600 hover:text-red-700 font-medium rounded-lg transition-all duration-200 bg-transparent"
                 style={{
                   backgroundColor: "transparent",
@@ -1799,7 +1814,7 @@ const BookmarkCards = () => {
                   borderColor: "var(--theme-primary)",
                 }}
               >
-                افزودن
+                {editingFolder ? "ویرایش" : "افزودن"}
               </Button>
             </div>
           </div>
